@@ -1,10 +1,22 @@
 # usm - UniFi Site Manager CLI
 
-A command-line interface for the [UniFi Site Manager API](https://developer.ui.com/site-manager/v1.0.0/gettingstarted).
+A full-featured command-line interface for the [UniFi Site Manager API](https://developer.ui.com/site-manager/v1.0.0/gettingstarted).
 
 ## Overview
 
-`usm` provides a simple, fast interface for managing UniFi sites via the official Site Manager API at `api.ui.com`. This tool focuses on cloud-based site management - for local controller APIs (Network, Protect), see the separate `unifi` CLI.
+`usm` provides a fast, intuitive interface for managing UniFi sites, hosts, devices, clients, WLANs, alerts, and more via the official Site Manager API at `api.ui.com`. This tool focuses on cloud-based site management - for local controller APIs (Network, Protect), see the separate `unifi` CLI.
+
+## Features
+
+- **Sites**: Create, update, delete, list, get details, health, statistics
+- **Hosts/Consoles**: List, get details, health, statistics, restart
+- **Devices**: List, get details, restart, upgrade firmware, adopt new devices
+- **Clients**: List (wired/wireless), view statistics, block/unblock
+- **WLANs**: Create, update, delete, list, get details
+- **Alerts**: List, acknowledge, archive
+- **Events**: View system events
+- **Networks**: List configured networks
+- **Full API Coverage**: Health monitoring, performance statistics, firmware management
 
 ## Installation
 
@@ -19,11 +31,11 @@ curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/d
 # macOS (Intel)
 curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-darwin-amd64 -o usm
 
-# Linux
-# amd64 or arm64
+# Linux (amd64)
+curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-linux-amd64 -o usm
 
-# Windows (PowerShell)
-# amd64
+# Linux (arm64)
+curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-linux-arm64 -o usm
 
 chmod +x usm
 sudo mv usm /usr/local/bin/
@@ -33,7 +45,7 @@ sudo mv usm /usr/local/bin/
 
 ```bash
 git clone https://github.com/dl-alexandre/UniFi-Site-Manager-CLI.git
-cd usm
+cd UniFi-Site-Manager-CLI
 make build
 ```
 
@@ -68,6 +80,24 @@ usm init          # First-time setup
 usm init --force # Overwrite existing config
 ```
 
+### `usm whoami`
+Show authenticated user account information.
+
+```bash
+usm whoami
+usm whoami --output json
+```
+
+### `usm version`
+Show version information.
+
+```bash
+usm version
+usm version --check  # Check for updates (not yet implemented)
+```
+
+## Site Management
+
 ### `usm sites list`
 List all sites with pagination and filtering.
 
@@ -87,20 +117,244 @@ Get detailed information about a specific site.
 usm sites get 60abcdef1234567890abcdef
 ```
 
-### `usm whoami`
-Show authenticated user account information.
+### `usm sites create <name>`
+Create a new site.
 
 ```bash
-usm whoami
-usm whoami --output json
+usm sites create "New Office" --description "Main office location"
 ```
 
-### `usm version`
-Show version information and check for updates.
+### `usm sites update <site-id>`
+Update an existing site.
 
 ```bash
-usm version              # Show current version
-usm version --check      # Check GitHub for latest release
+usm sites update 60abcdef1234567890abcdef --name "Updated Name" --description "New description"
+```
+
+### `usm sites delete <site-id>`
+Delete a site (with confirmation).
+
+```bash
+usm sites delete 60abcdef1234567890abcdef
+usm sites delete 60abcdef1234567890abcdef --force  # Skip confirmation
+```
+
+### `usm sites health <site-id>`
+Get site health information.
+
+```bash
+usm sites health 60abcdef1234567890abcdef
+```
+
+### `usm sites stats <site-id>`
+Get site performance statistics.
+
+```bash
+usm sites stats 60abcdef1234567890abcdef              # Current stats
+usm sites stats 60abcdef1234567890abcdef --period day   # Daily stats
+usm sites stats 60abcdef1234567890abcdef --period week  # Weekly stats
+usm sites stats 60abcdef1234567890abcdef --period month # Monthly stats
+```
+
+## Host/Console Management
+
+### `usm hosts list`
+List all UniFi hosts/consoles.
+
+```bash
+usm hosts list                          # Default: 50 hosts per page
+usm hosts list --page-size 0            # Fetch all hosts
+usm hosts list --search "UDM"         # Filter by name
+```
+
+### `usm hosts get <host-id>`
+Get detailed information about a specific host.
+
+```bash
+usm hosts get 60abcdef1234567890abcdef
+```
+
+### `usm hosts health <host-id>`
+Get host health information.
+
+```bash
+usm hosts health 60abcdef1234567890abcdef
+```
+
+### `usm hosts stats <host-id>`
+Get host performance statistics.
+
+```bash
+usm hosts stats 60abcdef1234567890abcdef --period day
+```
+
+### `usm hosts restart <host-id>`
+Restart a host/console.
+
+```bash
+usm hosts restart 60abcdef1234567890abcdef
+usm hosts restart 60abcdef1234567890abcdef --force  # Skip confirmation
+```
+
+## Device Management
+
+### `usm devices list <site-id>`
+List all devices for a site.
+
+```bash
+usm devices list 60abcdef1234567890abcdef
+usm devices list 60abcdef1234567890abcdef --page-size 100
+usm devices list 60abcdef1234567890abcdef --status online    # Filter by status
+usm devices list 60abcdef1234567890abcdef --type ap          # Filter by type (ap, switch, gateway)
+```
+
+### `usm devices get <site-id> <device-id>`
+Get detailed information about a specific device.
+
+```bash
+usm devices get 60abcdef1234567890abcdef 60fedcba0987654321fedcba
+```
+
+### `usm devices restart <site-id> <device-id>`
+Restart a device.
+
+```bash
+usm devices restart 60abcdef1234567890abcdef 60fedcba0987654321fedcba
+```
+
+### `usm devices upgrade <site-id> <device-id>`
+Upgrade device firmware.
+
+```bash
+usm devices upgrade 60abcdef1234567890abcdef 60fedcba0987654321fedcba
+```
+
+### `usm devices adopt <site-id> <mac-address>`
+Adopt a new device to a site.
+
+```bash
+usm devices adopt 60abcdef1234567890abcdef "aa:bb:cc:dd:ee:ff"
+```
+
+## Client Management
+
+### `usm clients list <site-id>`
+List all clients for a site.
+
+```bash
+usm clients list 60abcdef1234567890abcdef
+usm clients list 60abcdef1234567890abcdef --wired-only      # Show only wired clients
+usm clients list 60abcdef1234567890abcdef --wireless-only     # Show only wireless clients
+usm clients list 60abcdef1234567890abcdef --search "iPhone"  # Filter by hostname/name
+```
+
+### `usm clients stats <site-id> <mac-address>`
+Get statistics for a specific client.
+
+```bash
+usm clients stats 60abcdef1234567890abcdef "aa:bb:cc:dd:ee:ff"
+```
+
+### `usm clients block <site-id> <mac-address>`
+Block a client from the network.
+
+```bash
+usm clients block 60abcdef1234567890abcdef "aa:bb:cc:dd:ee:ff"
+```
+
+### `usm clients unblock <site-id> <mac-address>`
+Unblock a previously blocked client.
+
+```bash
+usm clients unblock 60abcdef1234567890abcdef "aa:bb:cc:dd:ee:ff"
+```
+
+## WLAN Management
+
+### `usm wlans list <site-id>`
+List all wireless networks for a site.
+
+```bash
+usm wlans list 60abcdef1234567890abcdef
+```
+
+### `usm wlans get <site-id> <wlan-id>`
+Get detailed information about a specific WLAN.
+
+```bash
+usm wlans get 60abcdef1234567890abcdef 60wlan0987654321abcdef
+```
+
+### `usm wlans create <site-id> <name> <ssid>`
+Create a new wireless network.
+
+```bash
+usm wlans create 60abcdef1234567890abcdef "Office WiFi" "Office-5G" \
+  --password "secure-password" \
+  --security wpapsk \
+  --vlan 10 \
+  --band both \
+  --wpa3
+```
+
+### `usm wlans update <site-id> <wlan-id>`
+Update an existing WLAN.
+
+```bash
+usm wlans update 60abcdef1234567890abcdef 60wlan0987654321abcdef \
+  --password "new-password" \
+  --enabled=false
+```
+
+### `usm wlans delete <site-id> <wlan-id>`
+Delete a WLAN.
+
+```bash
+usm wlans delete 60abcdef1234567890abcdef 60wlan0987654321abcdef
+```
+
+## Alert Management
+
+### `usm alerts list`
+List all alerts (optionally filtered by site).
+
+```bash
+usm alerts list                        # All alerts
+usm alerts list --site-id 60abcdef1234567890abcdef  # Site-specific alerts
+usm alerts list --archived             # Show archived alerts
+```
+
+### `usm alerts ack <site-id> <alert-id>`
+Acknowledge an alert.
+
+```bash
+usm alerts ack 60abcdef1234567890abcdef 60alert0987654321abcdef
+```
+
+### `usm alerts archive <site-id> <alert-id>`
+Archive an alert.
+
+```bash
+usm alerts archive 60abcdef1234567890abcdef 60alert0987654321abcdef
+```
+
+## Event Management
+
+### `usm events list`
+List system events.
+
+```bash
+usm events list                        # All events
+usm events list --site-id 60abcdef1234567890abcdef  # Site-specific events
+```
+
+## Network Management
+
+### `usm networks list <site-id>`
+List all configured networks for a site.
+
+```bash
+usm networks list 60abcdef1234567890abcdef
 ```
 
 ## Configuration
