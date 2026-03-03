@@ -376,43 +376,43 @@ func (c *LocalClient) handleErrorResponse(statusCode int, endpoint string, body 
 // These will be implemented as needed for full local controller support
 
 func (c *LocalClient) CreateSite(req CreateSiteRequest) (*SiteResponse, error) {
-	return nil, fmt.Errorf("CreateSite not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "CreateSite"}
 }
 
 func (c *LocalClient) UpdateSite(siteID string, req UpdateSiteRequest) (*SiteResponse, error) {
-	return nil, fmt.Errorf("UpdateSite not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "UpdateSite"}
 }
 
 func (c *LocalClient) DeleteSite(siteID string) error {
-	return fmt.Errorf("DeleteSite not yet implemented for local controllers")
+	return &NotImplementedError{Method: "DeleteSite"}
 }
 
 func (c *LocalClient) GetSiteHealth(siteID string) (*HealthResponse, error) {
-	return nil, fmt.Errorf("GetSiteHealth not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "GetSiteHealth"}
 }
 
 func (c *LocalClient) GetSiteStats(siteID string, period string) (*PerformanceResponse, error) {
-	return nil, fmt.Errorf("GetSiteStats not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "GetSiteStats"}
 }
 
 func (c *LocalClient) ListHosts(pageSize int, nextToken string) (*HostsResponse, error) {
-	return nil, fmt.Errorf("ListHosts not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "ListHosts"}
 }
 
 func (c *LocalClient) GetHost(hostID string) (*HostResponse, error) {
-	return nil, fmt.Errorf("GetHost not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "GetHost"}
 }
 
 func (c *LocalClient) GetHostHealth(hostID string) (*HealthResponse, error) {
-	return nil, fmt.Errorf("GetHostHealth not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "GetHostHealth"}
 }
 
 func (c *LocalClient) GetHostStats(hostID string, period string) (*PerformanceResponse, error) {
-	return nil, fmt.Errorf("GetHostStats not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "GetHostStats"}
 }
 
 func (c *LocalClient) RestartHost(hostID string) error {
-	return fmt.Errorf("RestartHost not yet implemented for local controllers")
+	return &NotImplementedError{Method: "RestartHost"}
 }
 
 // ListDevices retrieves all devices for a site from the local controller
@@ -483,11 +483,11 @@ func (c *LocalClient) GetDevice(siteID, deviceID string) (*DeviceResponse, error
 }
 
 func (c *LocalClient) UpgradeDevice(siteID, deviceID string) error {
-	return fmt.Errorf("UpgradeDevice not yet implemented for local controllers")
+	return &NotImplementedError{Method: "UpgradeDevice"}
 }
 
 func (c *LocalClient) AdoptDevice(siteID string, macAddress string) error {
-	return fmt.Errorf("AdoptDevice not yet implemented for local controllers")
+	return &NotImplementedError{Method: "AdoptDevice"}
 }
 
 // ListClients retrieves all connected clients for a site from the local controller
@@ -534,11 +534,11 @@ func (c *LocalClient) ListClients(siteID string, pageSize int, nextToken string,
 }
 
 func (c *LocalClient) GetClientStats(siteID, macAddress string) (*SingleResponse[ClientStats], error) {
-	return nil, fmt.Errorf("GetClientStats not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "GetClientStats"}
 }
 
 func (c *LocalClient) BlockClient(siteID, macAddress string, block bool) error {
-	return fmt.Errorf("BlockClient not yet implemented for local controllers")
+	return &NotImplementedError{Method: "BlockClient"}
 }
 
 // ListWLANs retrieves all wireless networks for a site from the local controller
@@ -724,23 +724,23 @@ func (c *LocalClient) DeleteWLAN(siteID, wlanID string) error {
 }
 
 func (c *LocalClient) ListAlerts(siteID string, pageSize int, nextToken string, archived bool) (*AlertsResponse, error) {
-	return nil, fmt.Errorf("ListAlerts not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "ListAlerts"}
 }
 
 func (c *LocalClient) AcknowledgeAlert(siteID, alertID string) error {
-	return fmt.Errorf("AcknowledgeAlert not yet implemented for local controllers")
+	return &NotImplementedError{Method: "AcknowledgeAlert"}
 }
 
 func (c *LocalClient) ArchiveAlert(siteID, alertID string) error {
-	return fmt.Errorf("ArchiveAlert not yet implemented for local controllers")
+	return &NotImplementedError{Method: "ArchiveAlert"}
 }
 
 func (c *LocalClient) ListEvents(siteID string, pageSize int, nextToken string) (*EventsResponse, error) {
-	return nil, fmt.Errorf("ListEvents not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "ListEvents"}
 }
 
 func (c *LocalClient) ListNetworks(siteID string, pageSize int, nextToken string) (*NetworksResponse, error) {
-	return nil, fmt.Errorf("ListNetworks not yet implemented for local controllers")
+	return nil, &NotImplementedError{Method: "ListNetworks"}
 }
 
 func (c *LocalClient) Whoami() (*WhoamiResponse, error) {

@@ -135,7 +135,7 @@ type CreateWLANCmd struct {
 	Name            string `arg:"" help:"WLAN name"`
 	SSID            string `help:"Network SSID (defaults to name if not specified)"`
 	Security        string `help:"Security type (wpapsk, wpaeap, etc.)" default:"wpapsk"`
-	Password        string `help:"Network password (for PSK security)"`
+	Password        string `name:"wlan-password" help:"Network password (for PSK security)"`
 	VLAN            int    `help:"VLAN ID"`
 	Band            string `help:"Band (2g, 5g, both)" default:"both"`
 	Hidden          bool   `help:"Hide SSID"`
@@ -205,7 +205,7 @@ type UpdateWLANCmd struct {
 	WLANID   string `arg:"" help:"WLAN ID to update"`
 	Name     string `help:"New WLAN name"`
 	Security string `help:"New security type"`
-	Password string `help:"New password"`
+	Password string `name:"wlan-password" help:"New password"`
 	Enabled  bool   `help:"Enable/disable WLAN"`
 	Hidden   bool   `help:"Hide/show SSID"`
 	VLAN     int    `help:"VLAN ID"`

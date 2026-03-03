@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "_id": "6049c23e8b2c9a001c2e3456",
+      "name": "Living Room AP",
+      "type": "uap",
+      "model": "U6-Lite",
+      "mac": "aa:bb:cc:dd:ee:ff",
+      "ip": "192.168.1.45",
+      "state": 1,
+      "adopt_status": 1,
+      "version": "6.5.0",
+      "site_id": "default",
+      "uptime": 86400,
+      "num_sta": 12
+    },
+    {
+      "_id": "6049c2408b2c9a001c2e3457",
+      "name": "Office Switch",
+      "type": "usw",
+      "model": "USW-Lite-8-PoE",
+      "mac": "aa:bb:cc:dd:ee:00",
+      "ip": "192.168.1.10",
+      "state": 1,
+      "adopt_status": 1,
+      "version": "6.5.0",
+      "site_id": "default",
+      "uptime": 172800,
+      "num_sta": 5
+    }
+  ]
+}

@@ -103,6 +103,21 @@ func (e *NetworkError) ExitCode() int {
 	return ExitNetworkError
 }
 
+// NotImplementedError represents a feature that is not yet implemented
+// This is used for stubbed methods to provide helpful feedback to users
+type NotImplementedError struct {
+	Method string
+}
+
+func (e *NotImplementedError) Error() string {
+	return fmt.Sprintf("The '%s' command is not yet implemented for Local Controllers.\nPlease vote for this feature: https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/issues?q=is%%3Aissue+label%%3Afeature-request",
+		e.Method)
+}
+
+func (e *NotImplementedError) ExitCode() int {
+	return ExitGeneralError
+}
+
 // GetExitCode returns the exit code for an error
 func GetExitCode(err error) int {
 	if err == nil {

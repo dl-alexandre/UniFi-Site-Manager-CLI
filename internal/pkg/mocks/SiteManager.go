@@ -834,6 +834,29 @@ func (_m *SiteManager) Whoami() (*api.SingleResponse[api.UserInfo], error) {
 	return r0, r1
 }
 
+// EnableDebug provides a mock function
+func (_m *SiteManager) EnableDebug() {
+	_m.Called()
+}
+
+// GetConnectionInfo provides a mock function
+func (_m *SiteManager) GetConnectionInfo() api.ConnectionInfo {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetConnectionInfo")
+	}
+
+	var r0 api.ConnectionInfo
+	if rf, ok := ret.Get(0).(func() api.ConnectionInfo); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(api.ConnectionInfo)
+	}
+
+	return r0
+}
+
 // NewSiteManager creates a new instance of SiteManager. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewSiteManager(t interface {
