@@ -157,7 +157,7 @@ func (c *RestartDeviceCmd) Run(ctx *CLIContext) error {
 	if !c.Force {
 		fmt.Printf("Are you sure you want to restart device %s? (y/N): ", c.DeviceID)
 		var response string
-		fmt.Scanln(&response)
+		_, _ = fmt.Scanln(&response)
 		response = strings.ToLower(strings.TrimSpace(response))
 		if response != "y" && response != "yes" {
 			fmt.Println("Restart cancelled")
@@ -191,7 +191,7 @@ func (c *UpgradeDeviceCmd) Run(ctx *CLIContext) error {
 	if !c.Force {
 		fmt.Printf("Are you sure you want to upgrade firmware on device %s? (y/N): ", c.DeviceID)
 		var response string
-		fmt.Scanln(&response)
+		_, _ = fmt.Scanln(&response)
 		response = strings.ToLower(strings.TrimSpace(response))
 		if response != "y" && response != "yes" {
 			fmt.Println("Upgrade cancelled")

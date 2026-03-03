@@ -188,7 +188,7 @@ func (c *RestartHostCmd) Run(ctx *CLIContext) error {
 	if !c.Force {
 		fmt.Printf("Are you sure you want to restart host %s? (y/N): ", c.HostID)
 		var response string
-		fmt.Scanln(&response)
+		_, _ = fmt.Scanln(&response)
 		response = strings.ToLower(strings.TrimSpace(response))
 		if response != "y" && response != "yes" {
 			fmt.Println("Restart cancelled")

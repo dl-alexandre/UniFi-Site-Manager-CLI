@@ -21,7 +21,7 @@ func TestClient_RetryOn429(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{
+		_ = json.NewEncoder(w).Encode(SitesResponse{
 			Data: []Site{{ID: "123", Name: "Test Site"}},
 		})
 	}))
@@ -52,7 +52,7 @@ func TestClient_RetryOn503(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{
+		_ = json.NewEncoder(w).Encode(SitesResponse{
 			Data: []Site{{ID: "456", Name: "Another Site"}},
 		})
 	}))
@@ -81,7 +81,7 @@ func TestClient_RetryOn502(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{
+		_ = json.NewEncoder(w).Encode(SitesResponse{
 			Data: []Site{{ID: "789", Name: "Third Site"}},
 		})
 	}))
@@ -136,7 +136,7 @@ func TestClient_NoRetryOn401(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		attempts++
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{"error": "invalid API key"})
+		_ = json.NewEncoder(w).Encode(map[string]string{"error": "invalid API key"})
 	}))
 	defer server.Close()
 
@@ -218,7 +218,7 @@ func TestClient_RetryRespectsMaxRetryDelay(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{
+		_ = json.NewEncoder(w).Encode(SitesResponse{
 			Data: []Site{{ID: "123", Name: "Test"}},
 		})
 	}))
@@ -247,7 +247,7 @@ func TestClient_NoRetryOn400(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		attempts++
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(APIResponse{
+		_ = json.NewEncoder(w).Encode(APIResponse{
 			Message: "Invalid parameter: name",
 		})
 	}))
@@ -275,7 +275,7 @@ func TestClient_ExhaustRetriesOn500(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		attempts++
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "Internal Server Error")
+		_, _ = fmt.Fprint(w, "Internal Server Error")
 	}))
 	defer server.Close()
 
@@ -299,7 +299,7 @@ func TestClient_SuccessOnFirstAttempt(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		attempts++
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{
+		_ = json.NewEncoder(w).Encode(SitesResponse{
 			Data: []Site{
 				{ID: "1", Name: "Site 1"},
 				{ID: "2", Name: "Site 2"},
@@ -333,21 +333,22 @@ func TestClient_Pagination(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 
 		// API returns paginated results based on query params
-		if nextToken == "" {
+		switch nextToken {
+		case "":
 			// First page request
-			json.NewEncoder(w).Encode(SitesResponse{
+			_ = json.NewEncoder(w).Encode(SitesResponse{
 				Data:      []Site{{ID: "1", Name: "Page 1 Site"}},
 				NextToken: "token-for-page-2",
 			})
-		} else if nextToken == "token-for-page-2" {
+		case "token-for-page-2":
 			// Second page request
-			json.NewEncoder(w).Encode(SitesResponse{
+			_ = json.NewEncoder(w).Encode(SitesResponse{
 				Data:      []Site{{ID: "2", Name: "Page 2 Site"}},
 				NextToken: "token-for-page-3",
 			})
-		} else {
+		default:
 			// Third and final page
-			json.NewEncoder(w).Encode(SitesResponse{
+			_ = json.NewEncoder(w).Encode(SitesResponse{
 				Data:      []Site{{ID: "3", Name: "Page 3 Site"}},
 				NextToken: "",
 			})
@@ -387,7 +388,7 @@ func TestClient_Pagination(t *testing.T) {
 func TestClient_InvalidJSONResponse(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "this is not valid json")
+		_, _ = fmt.Fprint(w, "this is not valid json")
 	}))
 	defer server.Close()
 
@@ -408,7 +409,7 @@ func TestClient_InvalidJSONResponse(t *testing.T) {
 func TestClient_EmptyResponse(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{
+		_ = json.NewEncoder(w).Encode(SitesResponse{
 			Data: []Site{},
 		})
 	}))
@@ -431,7 +432,7 @@ func TestClient_EmptyResponse(t *testing.T) {
 func TestClient_ConcurrentRequests(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{
+		_ = json.NewEncoder(w).Encode(SitesResponse{
 			Data: []Site{{ID: "test", Name: "Test Site"}},
 		})
 	}))

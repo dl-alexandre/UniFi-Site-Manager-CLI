@@ -50,7 +50,7 @@ func TestLoad(t *testing.T) {
 func TestGetAPIKey(t *testing.T) {
 	// Save and restore original env var
 	originalKey := os.Getenv("USM_API_KEY")
-	defer os.Setenv("USM_API_KEY", originalKey)
+	defer func() { _ = os.Setenv("USM_API_KEY", originalKey) }()
 
 	tests := []struct {
 		name    string
@@ -84,7 +84,7 @@ func TestGetAPIKey(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			os.Setenv("USM_API_KEY", tt.envKey)
+			_ = os.Setenv("USM_API_KEY", tt.envKey)
 			got, err := GetAPIKey(tt.flagKey)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetAPIKey() error = %v, wantErr %v", err, tt.wantErr)
