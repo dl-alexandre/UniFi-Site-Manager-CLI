@@ -3,11 +3,26 @@ name: Update Homebrew Tap
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to update tap for'
+        required: true
+        default: 'v0.0.3'
 
 jobs:
   update-tap:
     runs-on: ubuntu-latest
     steps:
+      - name: Determine release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout tap repository
         uses: actions/checkout@v4
         with:
@@ -21,10 +36,10 @@ jobs:
           cd dist
           
           # Download all platform binaries
-          curl -L -o usm-darwin-arm64 "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/${{ github.event.release.tag_name }}/usm-darwin-arm64"
-          curl -L -o usm-darwin-amd64 "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/${{ github.event.release.tag_name }}/usm-darwin-amd64"
-          curl -L -o usm-linux-arm64 "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/${{ github.event.release.tag_name }}/usm-linux-arm64"
-          curl -L -o usm-linux-amd64 "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/${{ github.event.release.tag_name }}/usm-linux-amd64"
+          curl -L -o usm-darwin-arm64 "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/${{ steps.tag.outputs.tag }}/usm-darwin-arm64"
+          curl -L -o usm-darwin-amd64 "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/${{ steps.tag.outputs.tag }}/usm-darwin-amd64"
+          curl -L -o usm-linux-arm64 "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/${{ steps.tag.outputs.tag }}/usm-linux-arm64"
+          curl -L -o usm-linux-amd64 "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/${{ steps.tag.outputs.tag }}/usm-linux-amd64"
 
       - name: Calculate SHA256 hashes
         id: hashes
@@ -34,7 +49,7 @@ jobs:
           echo "darwin_amd64=$(sha256sum usm-darwin-amd64 | cut -d' ' -f1)" >> $GITHUB_OUTPUT
           echo "linux_arm64=$(sha256sum usm-linux-arm64 | cut -d' ' -f1)" >> $GITHUB_OUTPUT
           echo "linux_amd64=$(sha256sum usm-linux-amd64 | cut -d' ' -f1)" >> $GITHUB_OUTPUT
-          echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          echo "version=${{ steps.tag.outputs.tag }}" >> $GITHUB_OUTPUT
 
       - name: Update formula
         run: |
@@ -89,5 +104,5 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add Formula/usm.rb
-          git commit -m "Update usm to ${{ github.event.release.tag_name }}" || echo "No changes to commit"
+          git commit -m "Update usm to ${{ steps.hashes.outputs.version }}" || echo "No changes to commit"
           git push
