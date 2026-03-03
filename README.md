@@ -32,7 +32,7 @@ sudo mv usm /usr/local/bin/
 ### Build from Source
 
 ```bash
-git clone https://github.com/dl-alexandre/usm.git
+git clone https://github.com/dl-alexandre/UniFi-Site-Manager-CLI.git
 cd usm
 make build
 ```
