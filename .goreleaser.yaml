@@ -1,0 +1,175 @@
+# GoReleaser configuration for UniFi Site Manager CLI
+# Documentation: https://goreleaser.com
+
+version: 2
+
+project_name: usm
+
+before:
+  hooks:
+    # Install dependencies
+    - go mod tidy
+    - go mod download
+    # Run tests to ensure quality before release
+    - go test ./...
+
+builds:
+  - id: usm
+    main: ./cmd/usm
+    binary: usm
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    goarm:
+      - "7"
+    ignore:
+      # Skip 32-bit builds
+      - goos: windows
+        goarch: arm
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.gitCommit={{.Commit}}
+      - -X main.buildTime={{.Date}}
+    flags:
+      - -trimpath
+
+archives:
+  - id: usm
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+    wrap_in_directory: true
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+  groups:
+    - title: Features
+      regexp: "^feat[/(].*"
+      order: 0
+    - title: Bug Fixes
+      regexp: "^fix[/(].*"
+      order: 1
+    - title: Improvements
+      regexp: "^improve[/(].*"
+      order: 2
+    - title: Other
+      order: 999
+
+release:
+  github:
+    owner: dl-alexandre
+    name: UniFi-Site-Manager-CLI
+  draft: false
+  prerelease: auto
+  name_template: "v{{.Version}}"
+  header: |
+    ## UniFi Site Manager CLI v{{.Version}}
+    
+    Full Changelog: https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/compare/{{.PreviousTag}}...v{{.Version}}
+  footer: |
+    ## Installation
+    
+    ### macOS/Linux (Homebrew)
+    ```bash
+    brew tap dl-alexandre/usm
+    brew install usm
+    ```
+    
+    ### Binary Download
+    Download the appropriate binary for your platform from the assets below.
+    
+    ### Verification
+    Verify checksums:
+    ```bash
+    sha256sum -c checksums.txt
+    ```
+
+# Homebrew tap configuration
+brews:
+  - name: usm
+    repository:
+      owner: dl-alexandre
+      name: homebrew-tap
+      token: "{{ .Env.GITHUB_TOKEN }}"
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    directory: Formula
+    description: "Full-featured CLI for managing UniFi networks via Site Manager API"
+    homepage: "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI"
+    license: "MIT"
+    test: |
+      system "#{bin}/usm", "version"
+    install: |
+      bin.install "usm"
+
+# Scoop configuration for Windows
+scoops:
+  - repository:
+      owner: dl-alexandre
+      name: scoop-bucket
+      token: "{{ .Env.GITHUB_TOKEN }}"
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+    commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Tag }}"
+    description: "Full-featured CLI for managing UniFi networks via Site Manager API"
+    homepage: "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI"
+    license: MIT
+    persist:
+      - "config.yaml"
+
+# Docker configuration (optional - uncomment when ready)
+# dockers:
+#   - image_templates:
+#       - "ghcr.io/dl-alexandre/usm:{{ .Tag }}"
+#       - "ghcr.io/dl-alexandre/usm:v{{ .Major }}"
+#       - "ghcr.io/dl-alexandre/usm:v{{ .Major }}.{{ .Minor }}"
+#       - "ghcr.io/dl-alexandre/usm:latest"
+#     dockerfile: Dockerfile
+#     build_flag_templates:
+#       - "--pull"
+#       - "--label=org.opencontainers.image.created={{.Date}}"
+#       - "--label=org.opencontainers.image.title={{.ProjectName}}"
+#       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+#       - "--label=org.opencontainers.image.version={{.Version}}"
+
+# Goreleaser Pro features (optional)
+# announce:
+#   twitter:
+#     enabled: true
+#     message_template: "UniFi Site Manager CLI {{.Tag}} is out! Check it out: https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/{{.Tag}}"

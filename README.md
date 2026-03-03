@@ -70,6 +70,54 @@ make build
    usm sites list
    ```
 
+## Release Process
+
+This project uses [GoReleaser](https://goreleaser.com/) for automated releases.
+
+### For Maintainers
+
+To create a new release:
+
+1. **Ensure CI passes**:
+   ```bash
+   make ci
+   ```
+
+2. **Update CHANGELOG.md** with new version details
+
+3. **Commit and tag**:
+   ```bash
+   git commit -am "Release v1.0.0"
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+4. **Set GitHub token** (requires repo write access):
+   ```bash
+   export GITHUB_TOKEN=ghp_your_token_here
+   ```
+
+5. **Create release**:
+   ```bash
+   make release
+   ```
+
+GoReleaser will:
+- Run tests
+- Build binaries for all platforms (Linux, macOS, Windows; AMD64, ARM64)
+- Create archives and checksums
+- Publish to GitHub Releases
+- Update Homebrew tap (if configured)
+
+### Testing Releases Locally
+
+Test without publishing:
+```bash
+make snapshot
+```
+
+This creates binaries in `dist/` for local testing.
+
 ## Commands
 
 ### `usm init`
@@ -427,6 +475,80 @@ make install-hooks
 ## Related Projects
 
 - `unifi` CLI - For local UniFi Network and Protect APIs
+
+## Beta Testing & Local Controller Support (v0.0.2)
+
+This release includes experimental support for direct connection to UniFi OS local controllers (UDM, UDM-Pro, UDR). This feature is in beta and requires community testing.
+
+### Local Controller Mode
+
+Connect directly to your UniFi Dream Machine or UniFi OS console without using the cloud API:
+
+```bash
+# List devices from local controller
+usm --local --host=192.168.1.1 --username=admin --password=yourpassword devices list
+
+# Or use environment variables
+export USM_LOCAL=true
+export USM_HOST=192.168.1.1
+export USM_USERNAME=admin
+export USM_PASSWORD=yourpassword
+
+usm devices list
+usm clients list
+```
+
+**Security Note**: Never pass `--password` as a CLI flag in production - use the `USM_PASSWORD` environment variable to prevent credentials from appearing in process lists.
+
+### Debug Mode
+
+If local controller commands fail, enable debug mode to see the exact API requests and responses:
+
+```bash
+usm --local --host=192.168.1.1 --username=admin --debug devices list
+```
+
+Debug output is automatically sanitized - passwords, CSRF tokens, cookies, and API keys are redacted.
+
+### Reporting Issues
+
+When reporting local controller issues:
+
+1. Run the command with `--debug` flag
+2. Copy the `[DEBUG]` output (credentials are already redacted)
+3. Open a GitHub issue with the debug output
+
+### Chrome Dev Tools Debugging
+
+If you encounter issues with local controller commands, you can inspect the exact API payloads:
+
+1. Open your UniFi controller web UI in Chrome
+2. Open Developer Tools (F12) → Network tab
+3. Perform the action in the web UI (e.g., create a WLAN)
+4. Find the request in the Network tab
+5. Check the **Payload** tab to see exact JSON structure
+6. Compare with the `[DEBUG] Raw Payload` output from the CLI
+
+**Note**: Local controller API endpoints differ from Cloud API:
+- Cloud: `/v1/sites/{id}/devices`
+- Local: `/proxy/network/api/s/{site}/stat/device`
+
+### Implemented Local Controller Features
+
+✅ **Working**:
+- Site listing (`sites list`)
+- Device listing and details (`devices list`, `devices get`)
+- Client listing (`clients list`)
+- WLAN CRUD operations (`wlans list`, `create`, `update`, `delete`)
+- Device restart (`devices restart`)
+
+🚧 **Stubbed** (not yet implemented):
+- Site creation/update/delete
+- Host/Console management
+- Device adoption and firmware upgrades
+- Client blocking/unblocking
+- Alerts and events
+- Network configuration
 
 ## License
 

@@ -122,6 +122,44 @@ type Device struct {
 	Stats          json.RawMessage `json:"statistics,omitempty"`
 }
 
+// UnmarshalJSON handles the structural differences between Cloud and Local API responses
+// Cloud API uses: id (string), status (string)
+// Local API uses: _id (MongoDB ObjectID), state (int: 1=online, 0=offline)
+func (d *Device) UnmarshalJSON(data []byte) error {
+	// Create an alias to avoid infinite recursion
+	type Alias Device
+
+	// Define auxiliary struct with local-specific fields
+	aux := &struct {
+		*Alias
+		LocalID    string `json:"_id"`
+		LocalState *int   `json:"state"`
+	}{
+		Alias: (*Alias)(d),
+	}
+
+	// Unmarshal into auxiliary struct
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	// Reconcile ID: Cloud uses 'id', Local uses '_id'
+	if d.ID == "" && aux.LocalID != "" {
+		d.ID = aux.LocalID
+	}
+
+	// Reconcile Status: Cloud uses 'status' string, Local uses 'state' int
+	if d.Status == "" && aux.LocalState != nil {
+		if *aux.LocalState == 1 {
+			d.Status = "ONLINE"
+		} else {
+			d.Status = "OFFLINE"
+		}
+	}
+
+	return nil
+}
+
 // DevicesResponse wraps the list of devices
 type DevicesResponse = ListResponse[Device]
 
@@ -174,6 +212,55 @@ type NetworkClient struct {
 	FixedIP      string  `json:"fixedIp,omitempty"`
 	UseFixedIP   bool    `json:"useFixedIp,omitempty"`
 	Note         string  `json:"note,omitempty"`
+}
+
+// UnmarshalJSON handles the structural differences between Cloud and Local API responses
+// Cloud API uses: id (string), connectionType (string)
+// Local API uses: _id (MongoDB ObjectID), is_wired (bool)
+func (nc *NetworkClient) UnmarshalJSON(data []byte) error {
+	// Create an alias to avoid infinite recursion
+	type Alias NetworkClient
+
+	// Define auxiliary struct with local-specific fields
+	aux := &struct {
+		*Alias
+		LocalID       string `json:"_id"`
+		LocalIsWired  *bool  `json:"is_wired"`
+		LocalHostname string `json:"hostname"`
+		LocalName     string `json:"name"`
+		LocalMAC      string `json:"mac"`
+	}{
+		Alias: (*Alias)(nc),
+	}
+
+	// Unmarshal into auxiliary struct
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	// Reconcile ID: Cloud uses 'id', Local uses '_id'
+	if nc.ID == "" && aux.LocalID != "" {
+		nc.ID = aux.LocalID
+	}
+
+	// Reconcile Name: Local API may have name in 'name' or 'hostname' or neither
+	// Priority: name > hostname > mac (fallback)
+	if nc.Name == "" {
+		if aux.LocalName != "" {
+			nc.Name = aux.LocalName
+		} else if aux.LocalHostname != "" {
+			nc.Name = aux.LocalHostname
+		} else if aux.LocalMAC != "" {
+			nc.Name = aux.LocalMAC // Last resort: show MAC address
+		}
+	}
+
+	// Reconcile IsWired: Cloud uses connectionType string, Local uses is_wired bool
+	if aux.LocalIsWired != nil {
+		nc.IsWired = *aux.LocalIsWired
+	}
+
+	return nil
 }
 
 // ClientsResponse wraps the list of clients

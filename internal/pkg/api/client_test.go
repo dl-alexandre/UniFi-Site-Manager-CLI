@@ -75,12 +75,16 @@ func TestCalculateBackoff(t *testing.T) {
 
 	tests := []struct {
 		attempt int
-		min     int64 // minimum expected in milliseconds
-		max     int64 // maximum expected in milliseconds
+		min     int64 // minimum expected in milliseconds (base delay)
+		max     int64 // maximum expected in milliseconds (base + max jitter)
 	}{
-		{attempt: 0, min: 0, max: 0},
-		{attempt: 1, min: 1000, max: 2000},
-		{attempt: 2, min: 2000, max: 3000},
+		// Backoff = (2^attempt) seconds + jitter(0-1000ms)
+		// Attempt 0: ~1s base + 0-1s jitter = 1000-2000ms
+		{attempt: 0, min: 900, max: 2100},
+		// Attempt 1: ~2s base + 0-1s jitter = 2000-3000ms
+		{attempt: 1, min: 1900, max: 3100},
+		// Attempt 2: ~4s base + 0-1s jitter = 4000-5000ms
+		{attempt: 2, min: 3900, max: 5100},
 	}
 
 	for _, tt := range tests {
