@@ -743,6 +743,14 @@ func (c *LocalClient) ListNetworks(siteID string, pageSize int, nextToken string
 	return nil, &NotImplementedError{Method: "ListNetworks"}
 }
 
+func (c *LocalClient) EnableNetwork(siteID, networkID string) error {
+	return &NotImplementedError{Method: "EnableNetwork"}
+}
+
+func (c *LocalClient) DisableNetwork(siteID, networkID string) error {
+	return &NotImplementedError{Method: "DisableNetwork"}
+}
+
 func (c *LocalClient) Whoami() (*WhoamiResponse, error) {
 	// Maps to: GET /api/auth/user-info
 	endpoint := "/api/auth/user-info"

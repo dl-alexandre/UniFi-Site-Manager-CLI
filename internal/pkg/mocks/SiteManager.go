@@ -857,6 +857,42 @@ func (_m *SiteManager) GetConnectionInfo() api.ConnectionInfo {
 	return r0
 }
 
+// EnableNetwork provides a mock function with given fields: siteID, networkID
+func (_m *SiteManager) EnableNetwork(siteID string, networkID string) error {
+	ret := _m.Called(siteID, networkID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for EnableNetwork")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(siteID, networkID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DisableNetwork provides a mock function with given fields: siteID, networkID
+func (_m *SiteManager) DisableNetwork(siteID string, networkID string) error {
+	ret := _m.Called(siteID, networkID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DisableNetwork")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(siteID, networkID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewSiteManager creates a new instance of SiteManager. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewSiteManager(t interface {

@@ -89,6 +89,10 @@ type SiteManager interface {
 	// ========== Networks ==========
 	// ListNetworks returns all networks for a site
 	ListNetworks(siteID string, pageSize int, nextToken string) (*NetworksResponse, error)
+	// EnableNetwork enables a network by ID
+	EnableNetwork(siteID, networkID string) error
+	// DisableNetwork disables a network by ID
+	DisableNetwork(siteID, networkID string) error
 
 	// ========== User ==========
 	// Whoami returns information about the authenticated user

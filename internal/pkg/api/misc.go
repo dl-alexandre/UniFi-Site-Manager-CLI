@@ -72,6 +72,38 @@ func (c *Client) ListNetworks(siteID string, pageSize int, nextToken string) (*N
 	return &result, nil
 }
 
+// EnableNetwork enables a network by ID
+func (c *Client) EnableNetwork(siteID, networkID string) error {
+	endpoint := fmt.Sprintf("/v1/sites/%s/networks/%s/enable", siteID, networkID)
+
+	resp, err := c.doPost(endpoint, nil)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode() != 200 {
+		return fmt.Errorf("failed to enable network: %d", resp.StatusCode())
+	}
+
+	return nil
+}
+
+// DisableNetwork disables a network by ID
+func (c *Client) DisableNetwork(siteID, networkID string) error {
+	endpoint := fmt.Sprintf("/v1/sites/%s/networks/%s/disable", siteID, networkID)
+
+	resp, err := c.doPost(endpoint, nil)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode() != 200 {
+		return fmt.Errorf("failed to disable network: %d", resp.StatusCode())
+	}
+
+	return nil
+}
+
 // ========== USER / AUTH ==========
 
 // Whoami retrieves information about the authenticated user
