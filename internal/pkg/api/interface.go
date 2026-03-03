@@ -1,6 +1,15 @@
 // Package api provides HTTP client for UniFi Site Manager API
 package api
 
+// ConnectionInfo contains metadata about the current API connection
+type ConnectionInfo struct {
+	Mode        string // "cloud" or "local"
+	Endpoint    string // API endpoint URL (redacted for security)
+	Version     string // Controller/API version (if available)
+	SiteID      string // Default or current site ID
+	IsConnected bool   // Whether connection is active
+}
+
 // SiteManager defines all interactions with a UniFi controller (Cloud or Local).
 // This interface abstracts the underlying implementation, allowing CLI commands
 // to work with either cloud or local controllers without modification.
@@ -84,6 +93,11 @@ type SiteManager interface {
 	// ========== User ==========
 	// Whoami returns information about the authenticated user
 	Whoami() (*WhoamiResponse, error)
+
+	// ========== Connection Info ==========
+	// GetConnectionInfo returns metadata about the current connection
+	// Useful for diagnostics and the whoami command
+	GetConnectionInfo() ConnectionInfo
 
 	// ========== Debugging ==========
 	// EnableDebug enables verbose API logging with credential redaction

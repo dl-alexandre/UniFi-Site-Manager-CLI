@@ -415,3 +415,19 @@ func containsAt(s, substr string, start int) bool {
 	}
 	return false
 }
+
+// GetConnectionInfo returns metadata about the Cloud API connection
+func (c *Client) GetConnectionInfo() ConnectionInfo {
+	endpoint := c.baseURL
+	if endpoint == "" {
+		endpoint = "https://api.ui.com"
+	}
+
+	return ConnectionInfo{
+		Mode:        "cloud",
+		Endpoint:    endpoint,
+		Version:     "v1",
+		SiteID:      "",
+		IsConnected: c.httpClient != nil,
+	}
+}

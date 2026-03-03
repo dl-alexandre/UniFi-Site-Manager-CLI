@@ -550,6 +550,41 @@ If you encounter issues with local controller commands, you can inspect the exac
 - Alerts and events
 - Network configuration
 
+### 🛠 Beta Testing & Bug Reporting
+
+> **We are currently in Beta for Local Controller support.** If a command returns empty results or an error on your UDM/UDR/UWS, please help us improve by following these steps:
+
+1. **Run with debug**: Execute the failing command with the `--debug` flag:
+   ```bash
+   usm --local --debug devices list > debug_output.txt 2>&1
+   ```
+
+2. **Verify Redaction**: Open the file and ensure your `X-CSRF-Token` and `Cookie` values say `[REDACTED]`. Passwords and API keys should also be redacted.
+
+3. **Test Whoami**: Run `usm whoami` to verify basic connectivity:
+   ```bash
+   # For Cloud API
+   usm --api-key=xxx whoami
+   
+   # For Local controller
+   usm --local --host=192.168.1.1 --username=admin whoami
+   ```
+
+4. **Open an Issue**: Create a new GitHub Issue with:
+   - The exact command you ran
+   - Expected vs actual behavior
+   - The `[DEBUG] Raw Payload` section from your debug output
+   - Your UniFi OS version (if known)
+
+**Using Chrome Dev Tools:**
+If the CLI fails but you want to investigate:
+1. Open your UniFi controller web UI in Chrome
+2. Open Developer Tools (F12) → Network tab
+3. Perform the action in the web UI (e.g., create a WLAN)
+4. Find the `POST` request to `wlanconf` in the Network tab
+5. Check the **Payload** tab to see exact JSON structure
+6. Compare with the `[DEBUG] Raw Payload` output from the CLI
+
 ## License
 
 MIT

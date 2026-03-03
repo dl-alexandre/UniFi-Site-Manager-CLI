@@ -763,3 +763,14 @@ func (c *LocalClient) Whoami() (*WhoamiResponse, error) {
 
 	return &result, nil
 }
+
+// GetConnectionInfo returns metadata about the Local controller connection
+func (c *LocalClient) GetConnectionInfo() ConnectionInfo {
+	return ConnectionInfo{
+		Mode:        "local",
+		Endpoint:    c.baseURL,
+		Version:     "UniFi OS",
+		SiteID:      "default",
+		IsConnected: c.httpClient != nil && c.csrfToken != "",
+	}
+}
