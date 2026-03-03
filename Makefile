@@ -1,4 +1,4 @@
-.PHONY: build build-all build-linux build-darwin build-windows test test-coverage lint release snapshot clean format install install-hooks mocks deps ci help check-release uninstall
+.PHONY: build build-all build-linux build-darwin build-windows test test-coverage lint release snapshot clean format install install-hooks mocks deps ci help check-release uninstall security check vet
 
 BINARY_NAME=usm
 MAIN_PATH=./cmd/usm
@@ -95,11 +95,24 @@ clean:
 	rm -f coverage.out coverage.html
 	@echo "Clean complete"
 
+# Run all checks (format, vet, lint, test)
+.PHONY: check
+check: format vet lint test
+	@echo "✓ All checks passed"
+
+# Run go vet
+.PHONY: vet
+vet:
+	@echo "Running go vet..."
+	go vet ./...
+
 # Install dependencies
+.PHONY: deps
 deps:
 	@echo "Downloading dependencies..."
 	go mod download
 	go mod tidy
+	go mod verify
 
 # Format code
 format:
@@ -117,6 +130,12 @@ mocks:
 	@which mockery > /dev/null || (echo "Installing mockery..." && go install github.com/vektra/mockery/v2@latest)
 	mockery --name=SiteManager --dir=internal/pkg/api --output=internal/pkg/mocks --outpkg=mocks
 	@echo "Mocks generated in internal/pkg/mocks/"
+
+# Run security scan
+security:
+	@echo "Running security scan..."
+	@which gosec > /dev/null || (echo "Installing gosec..." && go install github.com/securego/gosec/v2/cmd/gosec@latest)
+	gosec -quiet ./...
 
 # Install locally
 install: build
@@ -163,6 +182,7 @@ help:
 	@echo "QUALITY TARGETS:"
 	@echo "  make lint           - Run golangci-lint"
 	@echo "  make format         - Format code with gofmt and goimports"
+	@echo "  make security       - Run security scan with gosec"
 	@echo "  make mocks          - Generate test mocks with mockery"
 	@echo ""
 	@echo "MAINTENANCE TARGETS:"

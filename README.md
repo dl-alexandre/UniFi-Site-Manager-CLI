@@ -1,5 +1,7 @@
 # usm - UniFi Site Manager CLI
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/dl-alexandre/UniFi-Site-Manager-CLI)](https://goreportcard.com/report/github.com/dl-alexandre/UniFi-Site-Manager-CLI)
+
 A full-featured command-line interface for the [UniFi Site Manager API](https://developer.ui.com/site-manager/v1.0.0/gettingstarted).
 
 ## Overview
