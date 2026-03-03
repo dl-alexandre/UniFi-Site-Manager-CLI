@@ -1,5 +1,5 @@
-# Binaries
-usm
+# Binaries in root directory (not cmd/usm)
+/usm
 *.exe
 
 # Build artifacts
