@@ -59,6 +59,8 @@ make build
    # Or set environment variable
    export USM_API_KEY="your-api-key"
    ```
+   
+   **Note**: For UDM/Cloud Key users connecting directly to UniFi OS controllers, see the [UniFi OS Support](#unifi-os-support) section below.
 
 3. **Verify**:
    ```bash
@@ -69,6 +71,68 @@ make build
    ```bash
    usm sites list
    ```
+
+## UniFi OS Support
+
+The CLI supports direct connection to UniFi OS controllers (Dream Machine, Dream Machine Pro, Cloud Key Gen2+). These controllers have special requirements:
+
+### What is UniFi OS?
+
+UniFi OS is the operating system used by:
+- UniFi Dream Machine (UDM)
+- UniFi Dream Machine Pro (UDM Pro)
+- UniFi Cloud Key Gen2+
+- UniFi Dream Router (UDR)
+
+### Special Requirements
+
+1. **TLS Certificate Verification**: UniFi OS uses self-signed certificates by default. You need to skip TLS verification.
+2. **Proxy Paths**: UniFi OS uses `/proxy/network/api/` prefix instead of the standard API paths.
+3. **CSRF Token Handling**: The CLI automatically handles CSRF tokens for UniFi OS.
+4. **Site Names**: UniFi OS uses site names (e.g., "default") instead of numeric IDs.
+
+### Configuration
+
+Use these flags or environment variables:
+
+| Flag | Environment Variable | Description |
+|------|---------------------|-------------|
+| `--is-unifi-os` | `UNIFI_OS` | Enable UniFi OS mode (adds proxy paths) |
+| `--insecure-skip-verify` | `UNIFI_INSECURE` | Skip TLS certificate verification |
+
+### Example: UDM Pro Connection
+
+```bash
+# Using flags
+usm --host https://192.168.1.1 --username admin --password secret --is-unifi-os --insecure-skip-verify devices list
+
+# Using environment variables (recommended)
+export UNIFI_BASE_URL="https://192.168.1.1"
+export UNIFI_USERNAME="admin"
+export UNIFI_PASSWORD="your-password"
+export UNIFI_OS="true"
+export UNIFI_INSECURE="true"
+
+usm devices list
+```
+
+### Example .env File for UniFi OS
+
+Create a `.env` file or export these variables:
+
+```bash
+export UNIFI_BASE_URL="https://192.168.1.1"
+export UNIFI_USERNAME="admin"
+export UNIFI_PASSWORD="your-password"
+export UNIFI_OS="true"
+export UNIFI_INSECURE="true"
+```
+
+Then source it before running commands:
+```bash
+source .env
+usm sites list
+```
 
 ## Release Process
 
@@ -433,6 +497,16 @@ output:
 | `USM_COLOR` | Color mode: `auto`, `always`, `never` |
 | `USM_NO_HEADERS` | Disable table headers: `true`, `false` |
 | `USM_CONFIG` | Path to config file |
+
+### UniFi OS Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `UNIFI_BASE_URL` | Local controller URL (e.g., `https://192.168.1.1`) |
+| `UNIFI_USERNAME` | Username for local controller |
+| `UNIFI_PASSWORD` | Password for local controller |
+| `UNIFI_OS` | Enable UniFi OS mode: `true` (adds proxy paths) |
+| `UNIFI_INSECURE` | Skip TLS verification: `true` (for self-signed certs) |
 
 ## Exit Codes
 
