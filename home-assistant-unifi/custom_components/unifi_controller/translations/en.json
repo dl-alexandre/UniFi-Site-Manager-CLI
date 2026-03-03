@@ -1,0 +1,53 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "UniFi Controller",
+        "description": "Set up your UniFi Network Controller connection",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "username": "Username",
+          "password": "Password",
+          "site_id": "Site ID",
+          "unifi_os": "UniFi OS (UDM, UDR, UDM-Pro)",
+          "verify_ssl": "Verify SSL certificate"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect. Please check the host and port.",
+      "invalid_auth": "Invalid authentication. Please check your username and password.",
+      "no_sites": "No sites found. Please check your credentials and site ID.",
+      "unknown": "Unexpected error occurred"
+    },
+    "abort": {
+      "already_configured": "This UniFi Controller is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "UniFi Controller Options",
+        "description": "Configure update settings",
+        "data": {
+          "scan_interval": "Update interval (seconds)"
+        }
+      }
+    }
+  },
+  "services": {
+    "restart_device": {
+      "name": "Restart Device",
+      "description": "Restart a UniFi device by MAC address"
+    },
+    "block_client": {
+      "name": "Block Client",
+      "description": "Block or unblock a network client"
+    },
+    "reconnect_client": {
+      "name": "Reconnect Client",
+      "description": "Force a client to reconnect to the network"
+    }
+  }
+}
