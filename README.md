@@ -10,14 +10,14 @@ A command-line interface for the [UniFi Site Manager API](https://developer.ui.c
 
 ### Pre-built Binaries
 
-Download from [GitHub Releases](https://github.com/dl-alexandre/usm/releases):
+Download from [GitHub Releases](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases):
 
 ```bash
 # macOS (Apple Silicon)
-curl -L https://github.com/dl-alexandre/usm/releases/latest/download/usm-darwin-arm64 -o usm
+curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-darwin-arm64 -o usm
 
 # macOS (Intel)
-curl -L https://github.com/dl-alexandre/usm/releases/latest/download/usm-darwin-amd64 -o usm
+curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-darwin-amd64 -o usm
 
 # Linux
 # amd64 or arm64
