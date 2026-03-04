@@ -718,6 +718,15 @@ func (f *Formatter) PrintUserTable(user UserData) {
 
 // ========== UTILITY FUNCTIONS ==========
 
+// PrintSuccess outputs a success message
+func (f *Formatter) PrintSuccess(message string) {
+	if f.Color {
+		fmt.Printf("\033[32m✓ %s\033[0m\n", message)
+	} else {
+		fmt.Printf("✓ %s\n", message)
+	}
+}
+
 // ValidateFormat checks if the format is supported
 func ValidateFormat(format string) error {
 	switch format {

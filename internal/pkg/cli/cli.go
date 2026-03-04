@@ -45,17 +45,18 @@ type RootCmd struct {
 	Password string `name:"password" env:"USM_PASSWORD" help:"Local Controller password (use env var for security)" group:"Local Mode"`
 
 	// --- Commands ---
-	Init     InitCmd     `cmd:"" help:"Interactive configuration setup"`
-	Sites    SitesCmd    `cmd:"" help:"Manage sites"`
-	Hosts    HostsCmd    `cmd:"" help:"Manage hosts/consoles"`
-	Devices  DevicesCmd  `cmd:"" help:"Manage devices"`
-	Clients  ClientsCmd  `cmd:"" help:"Manage clients"`
-	WLANs    WLANsCmd    `cmd:"" help:"Manage wireless networks"`
-	Alerts   AlertsCmd   `cmd:"" help:"Manage alerts"`
-	Events   EventsCmd   `cmd:"" help:"View events"`
-	Networks NetworksCmd `cmd:"" help:"Manage networks"`
-	Whoami   WhoamiCmd   `cmd:"" help:"Show authenticated user information"`
-	Version  VersionCmd  `cmd:"" help:"Show version information"`
+	Init        InitCmd        `cmd:"" help:"Interactive configuration setup"`
+	Sites       SitesCmd       `cmd:"" help:"Manage sites"`
+	Hosts       HostsCmd       `cmd:"" help:"Manage hosts/consoles"`
+	Devices     DevicesCmd     `cmd:"" help:"Manage devices"`
+	Clients     ClientsCmd     `cmd:"" help:"Manage clients"`
+	WLANs       WLANsCmd       `cmd:"" help:"Manage wireless networks"`
+	Alerts      AlertsCmd      `cmd:"" help:"Manage alerts"`
+	Events      EventsCmd      `cmd:"" help:"View events"`
+	Networks    NetworksCmd    `cmd:"" help:"Manage networks"`
+	Whoami      WhoamiCmd      `cmd:"" help:"Show authenticated user information"`
+	Version     VersionCmd     `cmd:"" help:"Show version information"`
+	CheckUpdate CheckUpdateCmd `cmd:"" help:"Check for available updates"`
 }
 
 // IsLocalMode returns true if local controller mode is enabled
