@@ -504,3 +504,35 @@ type NetworksResponse = ListResponse[Network]
 
 // NetworkResponse wraps a single network
 type NetworkResponse = SingleResponse[Network]
+
+// APChannelInfo represents channel information for an access point
+type APChannelInfo struct {
+	ID         string `json:"_id"`
+	Name       string `json:"name"`
+	Model      string `json:"model"`
+	Channel24G int    `json:"channel24G,omitempty"`
+	Channel5G  int    `json:"channel5G,omitempty"`
+}
+
+// APChannelsResponse wraps the list of AP channel information
+type APChannelsResponse struct {
+	Code       string          `json:"code"`
+	Data       []APChannelInfo `json:"data"`
+	HTTPStatus int             `json:"httpStatusCode"`
+	TraceID    string          `json:"traceId"`
+}
+
+// WLANSettings represents detailed WLAN configuration including optimization settings
+type WLANSettings struct {
+	ID                string `json:"_id"`
+	Name              string `json:"name"`
+	BandSteering      string `json:"bandsteering,omitempty"`
+	AirtimeFairness   bool   `json:"atf_enabled,omitempty"`
+	IOTOptimize       bool   `json:"iot_enabled,omitempty"`
+	MinimumDataRate   int    `json:"minrate,omitempty"`
+	MinimumDataRate2G int    `json:"minrate_2g,omitempty"`
+	MinimumDataRate5G int    `json:"minrate_5g,omitempty"`
+}
+
+// WLANSettingsResponse wraps WLAN settings
+type WLANSettingsResponse = SingleResponse[WLANSettings]

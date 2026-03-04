@@ -106,6 +106,14 @@ type SiteManager interface {
 	// ========== Debugging ==========
 	// EnableDebug enables verbose API logging with credential redaction
 	EnableDebug()
+
+	// ========== WiFi Optimization ==========
+	// GetAPChannels retrieves channel information for all APs in a site
+	GetAPChannels(siteID string) (*APChannelsResponse, error)
+	// GetWLANSettings retrieves detailed WLAN settings including optimization options
+	GetWLANSettings(siteID, wlanID string) (*WLANSettingsResponse, error)
+	// UpdateWLANSettings updates WLAN settings with optimization options
+	UpdateWLANSettings(siteID, wlanID string, settings map[string]interface{}) error
 }
 
 // Compile-time check to ensure CloudClient fully implements SiteManager interface

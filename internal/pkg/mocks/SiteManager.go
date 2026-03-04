@@ -893,6 +893,84 @@ func (_m *SiteManager) DisableNetwork(siteID string, networkID string) error {
 	return r0
 }
 
+// GetAPChannels provides a mock function with given fields: siteID
+func (_m *SiteManager) GetAPChannels(siteID string) (*api.APChannelsResponse, error) {
+	ret := _m.Called(siteID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAPChannels")
+	}
+
+	var r0 *api.APChannelsResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (*api.APChannelsResponse, error)); ok {
+		return rf(siteID)
+	}
+	if rf, ok := ret.Get(0).(func(string) *api.APChannelsResponse); ok {
+		r0 = rf(siteID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*api.APChannelsResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(siteID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetWLANSettings provides a mock function with given fields: siteID, wlanID
+func (_m *SiteManager) GetWLANSettings(siteID string, wlanID string) (*api.WLANSettingsResponse, error) {
+	ret := _m.Called(siteID, wlanID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetWLANSettings")
+	}
+
+	var r0 *api.WLANSettingsResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) (*api.WLANSettingsResponse, error)); ok {
+		return rf(siteID, wlanID)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) *api.WLANSettingsResponse); ok {
+		r0 = rf(siteID, wlanID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*api.WLANSettingsResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(siteID, wlanID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateWLANSettings provides a mock function with given fields: siteID, wlanID, settings
+func (_m *SiteManager) UpdateWLANSettings(siteID string, wlanID string, settings map[string]interface{}) error {
+	ret := _m.Called(siteID, wlanID, settings)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateWLANSettings")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string, map[string]interface{}) error); ok {
+		r0 = rf(siteID, wlanID, settings)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewSiteManager creates a new instance of SiteManager. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewSiteManager(t interface {

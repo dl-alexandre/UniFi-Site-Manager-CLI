@@ -782,3 +782,18 @@ func (c *LocalClient) GetConnectionInfo() ConnectionInfo {
 		IsConnected: c.httpClient != nil && c.csrfToken != "",
 	}
 }
+
+// GetAPChannels retrieves channel information for all APs in a site
+func (c *LocalClient) GetAPChannels(siteID string) (*APChannelsResponse, error) {
+	return nil, &NotImplementedError{Method: "GetAPChannels"}
+}
+
+// GetWLANSettings retrieves detailed WLAN settings including optimization options
+func (c *LocalClient) GetWLANSettings(siteID, wlanID string) (*WLANSettingsResponse, error) {
+	return nil, &NotImplementedError{Method: "GetWLANSettings"}
+}
+
+// UpdateWLANSettings updates WLAN settings with optimization options
+func (c *LocalClient) UpdateWLANSettings(siteID, wlanID string, settings map[string]interface{}) error {
+	return &NotImplementedError{Method: "UpdateWLANSettings"}
+}
