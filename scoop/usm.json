@@ -1,0 +1,30 @@
+{
+  "version": "0.0.3",
+  "description": "UniFi Site Manager CLI for cloud API management",
+  "homepage": "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/v0.0.3/usm_windows_amd64.zip",
+      "hash": "PLACEHOLDER_SHA256"
+    },
+    "32bit": {
+      "url": "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/v0.0.3/usm_windows_386.zip",
+      "hash": "PLACEHOLDER_SHA256"
+    }
+  },
+  "bin": "usm.exe",
+  "checkver": {
+    "github": "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/v$version/usm_windows_amd64.zip"
+      },
+      "32bit": {
+        "url": "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/download/v$version/usm_windows_386.zip"
+      }
+    }
+  }
+}

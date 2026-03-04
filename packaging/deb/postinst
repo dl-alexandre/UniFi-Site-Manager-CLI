@@ -1,0 +1,12 @@
+#!/bin/bash
+# Post-installation script
+set -e
+
+echo "✅ USM (UniFi Site Manager CLI) installed successfully!"
+echo ""
+echo "Next steps:"
+echo "  1. Run 'usm --help' to see available commands"
+echo "  2. Run 'usm config init' to set up your configuration"
+echo "  3. Run 'usm account login' to authenticate with UniFi"
+echo ""
+echo "For more information, visit: https://github.com/dl-alexandre/UniFi-Site-Manager-CLI"

@@ -1,0 +1,81 @@
+#compdef usm
+
+# Zsh completion for usm (UniFi Site Manager CLI)
+
+local -a _usm_commands
+_usm_commands=(
+  'account:Manage UniFi account'
+  'site:Manage UniFi sites'
+  'device:Manage UniFi devices'
+  'network:Manage UniFi networks'
+  'config:Manage configuration'
+  'help:Show help'
+)
+
+local -a _account_subcommands
+_account_subcommands=(
+  'login:Login to UniFi account'
+  'logout:Logout from UniFi account'
+  'status:Show account status'
+)
+
+local -a _site_subcommands
+_site_subcommands=(
+  'list:List all sites'
+  'create:Create new site'
+  'delete:Delete a site'
+  'select:Select current site'
+  'current:Show current site'
+)
+
+local -a _device_subcommands
+_device_subcommands=(
+  'list:List all devices'
+  'adopt:Adopt a new device'
+  'restart:Restart a device'
+  'upgrade:Upgrade device firmware'
+)
+
+local -a _network_subcommands
+_network_subcommands=(
+  'status:Show network status'
+  'clients:List connected clients'
+)
+
+local -a _config_subcommands
+_config_subcommands=(
+  'init:Initialize configuration'
+  'view:View configuration'
+  'set:Set configuration value'
+)
+
+_arguments -C \
+  '(-v --version)'{-v,--version}'[Show version]:' \
+  '(-h --help)'{-h,--help}'[Show help]:' \
+  '1: :->command' \
+  '*:: :->args'
+
+case "$state" in
+  command)
+    _describe -t commands 'usm commands' _usm_commands
+    ;;
+  args)
+    case "$line[1]" in
+      account)
+        _describe -t subcommands 'account subcommands' _account_subcommands
+        ;;
+      site)
+        _describe -t subcommands 'site subcommands' _site_subcommands
+        ;;
+      device)
+        _describe -t subcommands 'device subcommands' _device_subcommands
+        ;;
+      network)
+        _describe -t subcommands 'network subcommands' _network_subcommands
+        ;;
+      config)
+        _describe -t subcommands 'config subcommands' _config_subcommands
+        ;;
+    esac
+    ;;
+esac

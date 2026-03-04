@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  usm-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/dl-alexandre/unifi-site-manager-cli:latest
+    container_name: usm-cli
+    environment:
+      # UniFi Cloud/Site Manager API Configuration
+      - USM_API_KEY=${USM_API_KEY}
+      - USM_HOSTNAME=${USM_HOSTNAME:-unifi.ui.com}
+      - USM_BASE_URL=${USM_BASE_URL:-https://unifi.ui.com}
+      
+      # Optional: Enable local controller mode
+      - USM_LOCAL=${USM_LOCAL:-false}
+      
+      # Local Controller Settings (when USM_LOCAL=true)
+      - UNIFI_BASE_URL=${UNIFI_BASE_URL}
+      - UNIFI_USERNAME=${UNIFI_USERNAME}
+      - UNIFI_PASSWORD=${UNIFI_PASSWORD}
+      
+      # Optional: Debug mode
+      - DEBUG=${DEBUG:-false}
+    volumes:
+      # Persist configuration
+      - ./config:/root/.config/usm
+    stdin_open: true
+    tty: true
+    command: ["--help"]
+
+  # Development service with source mounted
+  usm-cli-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    image: usm-cli:dev
+    container_name: usm-cli-dev
+    volumes:
+      - .:/app
+      - ./config:/root/.config/usm
+    working_dir: /app
+    command: ["go", "run", "./cmd/usm", "--help"]
+    environment:
+      - USM_API_KEY=${USM_API_KEY}
+      - USM_HOSTNAME=${USM_HOSTNAME}

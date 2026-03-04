@@ -1,0 +1,58 @@
+version: '3'
+
+tasks:
+  build:
+    desc: Build the binary
+    cmds:
+      - go build -o bin/usm ./cmd/usm
+  
+  test:
+    desc: Run tests
+    cmds:
+      - go test -v ./...
+  
+  lint:
+    desc: Run linter
+    cmds:
+      - golangci-lint run
+  
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf bin/ dist/
+      - go clean
+  
+  dev:
+    desc: Run in development mode
+    cmds:
+      - go run ./cmd/usm
+  
+  install:
+    desc: Install locally
+    cmds:
+      - go build -o bin/usm ./cmd/usm
+      - cp bin/usm /usr/local/bin/
+  
+  release:
+    desc: Build release binaries for all platforms
+    cmds:
+      - task: build-linux
+      - task: build-darwin
+      - task: build-windows
+  
+  build-linux:
+    desc: Build for Linux
+    cmds:
+      - GOOS=linux GOARCH=amd64 go build -o bin/usm-linux-amd64 ./cmd/usm
+      - GOOS=linux GOARCH=arm64 go build -o bin/usm-linux-arm64 ./cmd/usm
+  
+  build-darwin:
+    desc: Build for macOS
+    cmds:
+      - GOOS=darwin GOARCH=amd64 go build -o bin/usm-darwin-amd64 ./cmd/usm
+      - GOOS=darwin GOARCH=arm64 go build -o bin/usm-darwin-arm64 ./cmd/usm
+  
+  build-windows:
+    desc: Build for Windows
+    cmds:
+      - GOOS=windows GOARCH=amd64 go build -o bin/usm-windows-amd64.exe ./cmd/usm

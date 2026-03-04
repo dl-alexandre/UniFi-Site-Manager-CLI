@@ -1,481 +1,243 @@
-# usm - UniFi Site Manager CLI
+# UniFi Site Manager CLI
 
+[![CI](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/actions/workflows/ci.yml/badge.svg)](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dl-alexandre/UniFi-Site-Manager-CLI)](https://goreportcard.com/report/github.com/dl-alexandre/UniFi-Site-Manager-CLI)
+[![Go Version](https://img.shields.io/badge/go-1.24+-blue)](https://golang.org/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/dl-alexandre/UniFi-Site-Manager-CLI)](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases)
+[![Homebrew](https://img.shields.io/badge/homebrew-tap-blue)](https://github.com/dl-alexandre/homebrew-tap)
 
-A full-featured command-line interface for the [UniFi Site Manager API](https://developer.ui.com/site-manager/v1.0.0/gettingstarted).
-
-## Overview
-
-`usm` provides a fast, intuitive interface for managing UniFi sites, hosts, devices, clients, WLANs, alerts, and more via the official Site Manager API at `api.ui.com`. This tool focuses on cloud-based site management - for local controller APIs (Network, Protect), see the separate `unifi` CLI.
+> A full-featured command-line interface for managing UniFi networks via the Site Manager Cloud API and local UniFi OS controllers.
 
 ## Features
 
-- **Sites**: Create, update, delete, list, get details, health, statistics
-- **Hosts/Consoles**: List, get details, health, statistics, restart
-- **Devices**: List, get details, restart, upgrade firmware, adopt new devices
-- **Clients**: List (wired/wireless), view statistics, block/unblock
-- **WLANs**: Create, update, delete, list, get details
-- **Alerts**: List, acknowledge, archive
-- **Events**: View system events
-- **Networks**: List configured networks
-- **Full API Coverage**: Health monitoring, performance statistics, firmware management
+- ✨ **Dual Mode Support**: Cloud API (Site Manager) and Local Controller (UDM/UDR/Cloud Key)
+- 🚀 **Complete Site Management**: Create, update, delete sites with full API coverage
+- 🔒 **Secure Authentication**: API key support with environment variable safety
+- 📊 **Rich Output Formats**: Tables, JSON, and CSV for easy scripting
+- 🏠 **Device Management**: List, restart, upgrade firmware, adopt devices
+- 👥 **Client Management**: View, block/unblock connected clients
+- 📡 **WLAN Management**: Create, configure, and optimize wireless networks
+- 🔔 **Alert Monitoring**: Acknowledge and archive system alerts
+- 🛠️ **UniFi OS Support**: Direct connection to UDM, UDM-Pro, UDR, Cloud Key
+
+## Demo
+
+```bash
+$ usm whoami
+┌─────────────┬─────────────────────────────────────────┐
+│ EMAIL       │ admin@example.com                       │
+│ NAME        │ Network Admin                           │
+│ ROLE        │ Owner                                   │
+│ SITES       │ 3                                       │
+│ HOSTS       │ 2                                       │
+└─────────────┴─────────────────────────────────────────┘
+
+$ usm sites list
+┌─────────────────────────┬─────────────────┬──────────┬──────────┐
+│ ID                      │ NAME            │ HOSTS    │ DEVICES  │
+├─────────────────────────┼─────────────────┼──────────┼──────────┤
+│ 60abcdef1234567890abcde │ Main Office     │ 1        │ 12       │
+│ 60abcdef1234567890abcdf │ Home Network    │ 1        │ 8        │
+│ 60abcdef1234567890abcd0 │ Branch Office   │ 1        │ 6        │
+└─────────────────────────┴─────────────────┴──────────┴──────────┘
+```
+
+## Quick Start
+
+### 1. Installation
+
+```bash
+# macOS (Homebrew)
+brew install dl-alexandre/tap/usm
+
+# Linux (curl)
+curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-linux-amd64 -o usm
+chmod +x usm
+sudo mv usm /usr/local/bin/
+
+# Or download from GitHub Releases
+# https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases
+```
+
+### 2. Configure
+
+```bash
+# Interactive setup (recommended)
+usm init
+
+# Or use environment variables
+export USM_API_KEY="your-api-key-from-unifi.ui.com"
+```
+
+### 3. Verify & Use
+
+```bash
+# Verify connection
+usm whoami
+
+# List sites
+usm sites list
+
+# List devices in a site
+usm devices list <site-id>
+
+# Get site health
+usm sites health <site-id>
+```
 
 ## Installation
 
-### Pre-built Binaries
-
-Download from [GitHub Releases](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases):
+### macOS
 
 ```bash
-# macOS (Apple Silicon)
+# Using Homebrew
+brew tap dl-alexandre/tap
+brew install usm
+
+# Or download binary
 curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-darwin-arm64 -o usm
-
-# macOS (Intel)
-curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-darwin-amd64 -o usm
-
-# Linux (amd64)
-curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-linux-amd64 -o usm
-
-# Linux (arm64)
-curl -L https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-linux-arm64 -o usm
-
 chmod +x usm
 sudo mv usm /usr/local/bin/
+```
+
+### Linux
+
+```bash
+# Download latest release
+wget https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases/latest/download/usm-linux-amd64.tar.gz
+tar -xzf usm-linux-amd64.tar.gz
+sudo mv usm /usr/local/bin/
+
+# Or using snap (coming soon)
+snap install usm
+```
+
+### Windows
+
+```powershell
+# Using scoop
+scoop bucket add unifi https://github.com/dl-alexandre/scoop-bucket
+scoop install usm
+
+# Or download from releases and add to PATH
+# https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/releases
+```
+
+### Docker
+
+```bash
+# Pull the image
+docker pull ghcr.io/dl-alexandre/usm:latest
+
+# Run with environment variables
+docker run --rm -e USM_API_KEY="your-key" ghcr.io/dl-alexandre/usm sites list
+
+# With volume for config
+docker run --rm -v ~/.config/usm:/root/.config/usm ghcr.io/dl-alexandre/usm sites list
 ```
 
 ### Build from Source
 
 ```bash
+# Requirements: Go 1.24+
 git clone https://github.com/dl-alexandre/UniFi-Site-Manager-CLI.git
 cd UniFi-Site-Manager-CLI
 make build
+
+# Or use go install
+go install github.com/dl-alexandre/UniFi-Site-Manager-CLI/cmd/usm@latest
 ```
 
-## Quick Start
+## Usage Examples
 
-1. **Get an API Key** from [unifi.ui.com](https://unifi.ui.com) → Settings → Control Plane → Integrations → API Keys
-
-2. **Configure**:
-   ```bash
-   usm init
-   # Or set environment variable
-   export USM_API_KEY="your-api-key"
-   ```
-   
-   **Note**: For UDM/Cloud Key users connecting directly to UniFi OS controllers, see the [UniFi OS Support](#unifi-os-support) section below.
-
-3. **Verify**:
-   ```bash
-   usm whoami
-   ```
-
-4. **List sites**:
-   ```bash
-   usm sites list
-   ```
-
-## UniFi OS Support
-
-The CLI supports direct connection to UniFi OS controllers (Dream Machine, Dream Machine Pro, Cloud Key Gen2+). These controllers have special requirements:
-
-### What is UniFi OS?
-
-UniFi OS is the operating system used by:
-- UniFi Dream Machine (UDM)
-- UniFi Dream Machine Pro (UDM Pro)
-- UniFi Cloud Key Gen2+
-- UniFi Dream Router (UDR)
-
-### Special Requirements
-
-1. **TLS Certificate Verification**: UniFi OS uses self-signed certificates by default. You need to skip TLS verification.
-2. **Proxy Paths**: UniFi OS uses `/proxy/network/api/` prefix instead of the standard API paths.
-3. **CSRF Token Handling**: The CLI automatically handles CSRF tokens for UniFi OS.
-4. **Site Names**: UniFi OS uses site names (e.g., "default") instead of numeric IDs.
-
-### Configuration
-
-Use these flags or environment variables:
-
-| Flag | Environment Variable | Description |
-|------|---------------------|-------------|
-| `--is-unifi-os` | `UNIFI_OS` | Enable UniFi OS mode (adds proxy paths) |
-| `--insecure-skip-verify` | `UNIFI_INSECURE` | Skip TLS certificate verification |
-
-### Example: UDM Pro Connection
+### Basic Operations
 
 ```bash
-# Using flags
-usm --host https://192.168.1.1 --username admin --password secret --is-unifi-os --insecure-skip-verify devices list
+# Initialize configuration
+usm init
 
-# Using environment variables (recommended)
-export UNIFI_BASE_URL="https://192.168.1.1"
-export UNIFI_USERNAME="admin"
-export UNIFI_PASSWORD="your-password"
-export UNIFI_OS="true"
-export UNIFI_INSECURE="true"
-
-usm devices list
-```
-
-### Example .env File for UniFi OS
-
-Create a `.env` file or export these variables:
-
-```bash
-export UNIFI_BASE_URL="https://192.168.1.1"
-export UNIFI_USERNAME="admin"
-export UNIFI_PASSWORD="your-password"
-export UNIFI_OS="true"
-export UNIFI_INSECURE="true"
-```
-
-Then source it before running commands:
-```bash
-source .env
-usm sites list
-```
-
-## Release Process
-
-This project uses [GoReleaser](https://goreleaser.com/) for automated releases.
-
-### For Maintainers
-
-To create a new release:
-
-1. **Ensure CI passes**:
-   ```bash
-   make ci
-   ```
-
-2. **Update CHANGELOG.md** with new version details
-
-3. **Commit and tag**:
-   ```bash
-   git commit -am "Release v1.0.0"
-   git tag v1.0.0
-   git push origin v1.0.0
-   ```
-
-4. **Set GitHub token** (requires repo write access):
-   ```bash
-   export GITHUB_TOKEN=ghp_your_token_here
-   ```
-
-5. **Create release**:
-   ```bash
-   make release
-   ```
-
-GoReleaser will:
-- Run tests
-- Build binaries for all platforms (Linux, macOS, Windows; AMD64, ARM64)
-- Create archives and checksums
-- Publish to GitHub Releases
-- Update Homebrew tap (if configured)
-
-### Testing Releases Locally
-
-Test without publishing:
-```bash
-make snapshot
-```
-
-This creates binaries in `dist/` for local testing.
-
-## Commands
-
-### `usm init`
-Interactive configuration setup. Creates `~/.config/usm/config.yaml`.
-
-```bash
-usm init          # First-time setup
-usm init --force # Overwrite existing config
-```
-
-### `usm whoami`
-Show authenticated user account information.
-
-```bash
+# Show current user
 usm whoami
-usm whoami --output json
-```
 
-### `usm version`
-Show version information.
+# List all sites
+usm sites list
 
-```bash
-usm version
-usm version --check  # Check for updates (not yet implemented)
-```
-
-## Site Management
-
-### `usm sites list`
-List all sites with pagination and filtering.
-
-```bash
-usm sites list                          # Default: 50 sites per page
-usm sites list --page-size 100          # Get 100 sites
-usm sites list --page-size 0            # Fetch all sites
-usm sites list --search "office"        # Filter by name/description
-usm sites list --output json            # JSON output
-usm sites list --no-headers             # Table without headers (for scripts)
-```
-
-### `usm sites get <site-id>`
-Get detailed information about a specific site.
-
-```bash
+# Get site details
 usm sites get 60abcdef1234567890abcdef
-```
 
-### `usm sites create <name>`
-Create a new site.
-
-```bash
-usm sites create "New Office" --description "Main office location"
-```
-
-### `usm sites update <site-id>`
-Update an existing site.
-
-```bash
-usm sites update 60abcdef1234567890abcdef --name "Updated Name" --description "New description"
-```
-
-### `usm sites delete <site-id>`
-Delete a site (with confirmation).
-
-```bash
-usm sites delete 60abcdef1234567890abcdef
-usm sites delete 60abcdef1234567890abcdef --force  # Skip confirmation
-```
-
-### `usm sites health <site-id>`
-Get site health information.
-
-```bash
+# Check site health
 usm sites health 60abcdef1234567890abcdef
 ```
 
-### `usm sites stats <site-id>`
-Get site performance statistics.
+### Advanced Usage
 
 ```bash
-usm sites stats 60abcdef1234567890abcdef              # Current stats
-usm sites stats 60abcdef1234567890abcdef --period day   # Daily stats
-usm sites stats 60abcdef1234567890abcdef --period week  # Weekly stats
-usm sites stats 60abcdef1234567890abcdef --period month # Monthly stats
-```
+# List devices with filtering
+usm devices list 60abcdef1234567890abcdef --status online --type ap
 
-## Host/Console Management
+# Create a new WLAN
+usm wlans create 60abcdef1234567890abcdef "Guest WiFi" "Guest-Network" \
+  --password "guest123" --security wpapsk --vlan 20
 
-### `usm hosts list`
-List all UniFi hosts/consoles.
-
-```bash
-usm hosts list                          # Default: 50 hosts per page
-usm hosts list --page-size 0            # Fetch all hosts
-usm hosts list --search "UDM"         # Filter by name
-```
-
-### `usm hosts get <host-id>`
-Get detailed information about a specific host.
-
-```bash
-usm hosts get 60abcdef1234567890abcdef
-```
-
-### `usm hosts health <host-id>`
-Get host health information.
-
-```bash
-usm hosts health 60abcdef1234567890abcdef
-```
-
-### `usm hosts stats <host-id>`
-Get host performance statistics.
-
-```bash
-usm hosts stats 60abcdef1234567890abcdef --period day
-```
-
-### `usm hosts restart <host-id>`
-Restart a host/console.
-
-```bash
-usm hosts restart 60abcdef1234567890abcdef
-usm hosts restart 60abcdef1234567890abcdef --force  # Skip confirmation
-```
-
-## Device Management
-
-### `usm devices list <site-id>`
-List all devices for a site.
-
-```bash
-usm devices list 60abcdef1234567890abcdef
-usm devices list 60abcdef1234567890abcdef --page-size 100
-usm devices list 60abcdef1234567890abcdef --status online    # Filter by status
-usm devices list 60abcdef1234567890abcdef --type ap          # Filter by type (ap, switch, gateway)
-```
-
-### `usm devices get <site-id> <device-id>`
-Get detailed information about a specific device.
-
-```bash
-usm devices get 60abcdef1234567890abcdef 60fedcba0987654321fedcba
-```
-
-### `usm devices restart <site-id> <device-id>`
-Restart a device.
-
-```bash
-usm devices restart 60abcdef1234567890abcdef 60fedcba0987654321fedcba
-```
-
-### `usm devices upgrade <site-id> <device-id>`
-Upgrade device firmware.
-
-```bash
-usm devices upgrade 60abcdef1234567890abcdef 60fedcba0987654321fedcba
-```
-
-### `usm devices adopt <site-id> <mac-address>`
-Adopt a new device to a site.
-
-```bash
-usm devices adopt 60abcdef1234567890abcdef "aa:bb:cc:dd:ee:ff"
-```
-
-## Client Management
-
-### `usm clients list <site-id>`
-List all clients for a site.
-
-```bash
-usm clients list 60abcdef1234567890abcdef
-usm clients list 60abcdef1234567890abcdef --wired-only      # Show only wired clients
-usm clients list 60abcdef1234567890abcdef --wireless-only     # Show only wireless clients
-usm clients list 60abcdef1234567890abcdef --search "iPhone"  # Filter by hostname/name
-```
-
-### `usm clients stats <site-id> <mac-address>`
-Get statistics for a specific client.
-
-```bash
-usm clients stats 60abcdef1234567890abcdef "aa:bb:cc:dd:ee:ff"
-```
-
-### `usm clients block <site-id> <mac-address>`
-Block a client from the network.
-
-```bash
+# Block a problematic client
 usm clients block 60abcdef1234567890abcdef "aa:bb:cc:dd:ee:ff"
+
+# Export data as JSON
+usm sites list --output json > sites.json
 ```
 
-### `usm clients unblock <site-id> <mac-address>`
-Unblock a previously blocked client.
+### Local Controller Mode (UniFi OS)
 
 ```bash
-usm clients unblock 60abcdef1234567890abcdef "aa:bb:cc:dd:ee:ff"
+# Connect to UDM/UDM-Pro directly
+export USM_HOST="192.168.1.1"
+export USM_USERNAME="admin"
+export USM_PASSWORD="yourpassword"
+export USM_LOCAL=true
+
+# List devices from local controller
+usm devices list
+
+# Or use flags
+usm --local --host=192.168.1.1 --username=admin --password=secret devices list
 ```
 
-## WLAN Management
-
-### `usm wlans list <site-id>`
-List all wireless networks for a site.
+### Automation Scripts
 
 ```bash
-usm wlans list 60abcdef1234567890abcdef
-```
+# Health check script
+#!/bin/bash
+SITE_ID="60abcdef1234567890abcdef"
+HEALTH=$(usm sites health $SITE_ID --output json)
+DEVICE_ISSUES=$(echo $HEALTH | jq '.devices | map(select(.status != "online")) | length')
 
-### `usm wlans get <site-id> <wlan-id>`
-Get detailed information about a specific WLAN.
-
-```bash
-usm wlans get 60abcdef1234567890abcdef 60wlan0987654321abcdef
-```
-
-### `usm wlans create <site-id> <name> <ssid>`
-Create a new wireless network.
-
-```bash
-usm wlans create 60abcdef1234567890abcdef "Office WiFi" "Office-5G" \
-  --password "secure-password" \
-  --security wpapsk \
-  --vlan 10 \
-  --band both \
-  --wpa3
-```
-
-### `usm wlans update <site-id> <wlan-id>`
-Update an existing WLAN.
-
-```bash
-usm wlans update 60abcdef1234567890abcdef 60wlan0987654321abcdef \
-  --password "new-password" \
-  --enabled=false
-```
-
-### `usm wlans delete <site-id> <wlan-id>`
-Delete a WLAN.
-
-```bash
-usm wlans delete 60abcdef1234567890abcdef 60wlan0987654321abcdef
-```
-
-## Alert Management
-
-### `usm alerts list`
-List all alerts (optionally filtered by site).
-
-```bash
-usm alerts list                        # All alerts
-usm alerts list --site-id 60abcdef1234567890abcdef  # Site-specific alerts
-usm alerts list --archived             # Show archived alerts
-```
-
-### `usm alerts ack <site-id> <alert-id>`
-Acknowledge an alert.
-
-```bash
-usm alerts ack 60abcdef1234567890abcdef 60alert0987654321abcdef
-```
-
-### `usm alerts archive <site-id> <alert-id>`
-Archive an alert.
-
-```bash
-usm alerts archive 60abcdef1234567890abcdef 60alert0987654321abcdef
-```
-
-## Event Management
-
-### `usm events list`
-List system events.
-
-```bash
-usm events list                        # All events
-usm events list --site-id 60abcdef1234567890abcdef  # Site-specific events
-```
-
-## Network Management
-
-### `usm networks list <site-id>`
-List all configured networks for a site.
-
-```bash
-usm networks list 60abcdef1234567890abcdef
+if [ "$DEVICE_ISSUES" -gt 0 ]; then
+  echo "Warning: $DEVICE_ISSUES devices are not online"
+  exit 1
+fi
 ```
 
 ## Configuration
 
-Configuration file: `~/.config/usm/config.yaml`
+### Environment Variables
 
-**Note**: API keys are NOT stored in the config file. Use environment variables or flags.
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `USM_API_KEY` | Site Manager API key | Cloud mode |
+| `USM_BASE_URL` | API base URL (default: https://api.ui.com) | No |
+| `USM_TIMEOUT` | Request timeout in seconds (default: 30) | No |
+| `USM_FORMAT` | Default output: `table`, `json` | No |
+| `USM_COLOR` | Color mode: `auto`, `always`, `never` | No |
+| `USM_NO_HEADERS` | Disable table headers: `true`, `false` | No |
+| `USM_LOCAL` | Enable local controller mode: `true` | Local mode |
+| `USM_HOST` | Local controller IP/hostname | Local mode |
+| `USM_USERNAME` | Local controller username | Local mode |
+| `USM_PASSWORD` | Local controller password | Local mode |
+
+### Configuration File
+
+Location: `~/.config/usm/config.yaml`
 
 ```yaml
 api:
@@ -488,27 +250,131 @@ output:
   no_headers: false
 ```
 
-## Environment Variables
+### Getting an API Key
 
-| Variable | Description |
-|----------|-------------|
-| `USM_API_KEY` | API key for authentication (required) |
-| `USM_BASE_URL` | API base URL (default: `https://api.ui.com`) |
-| `USM_TIMEOUT` | Request timeout in seconds (default: `30`) |
-| `USM_FORMAT` | Default output format: `table`, `json` |
-| `USM_COLOR` | Color mode: `auto`, `always`, `never` |
-| `USM_NO_HEADERS` | Disable table headers: `true`, `false` |
-| `USM_CONFIG` | Path to config file |
+1. Log into [unifi.ui.com](https://unifi.ui.com)
+2. Go to **Settings** → **Control Plane** → **Integrations** → **API Keys**
+3. Click **Create API Key**
+4. Copy the key (it won't be shown again)
 
-### UniFi OS Environment Variables
+## API Coverage
 
-| Variable | Description |
-|----------|-------------|
-| `UNIFI_BASE_URL` | Local controller URL (e.g., `https://192.168.1.1`) |
-| `UNIFI_USERNAME` | Username for local controller |
-| `UNIFI_PASSWORD` | Password for local controller |
-| `UNIFI_OS` | Enable UniFi OS mode: `true` (adds proxy paths) |
-| `UNIFI_INSECURE` | Skip TLS verification: `true` (for self-signed certs) |
+| Feature | Cloud API | Local API | Endpoint |
+|---------|-----------|-----------|----------|
+| **Sites** ||||
+| List sites | ✅ | ✅ | GET /v1/sites |
+| Get site | ✅ | ✅ | GET /v1/sites/{id} |
+| Create site | ✅ | ❌ | POST /v1/sites |
+| Update site | ✅ | ❌ | PUT /v1/sites/{id} |
+| Delete site | ✅ | ❌ | DELETE /v1/sites/{id} |
+| Site health | ✅ | ✅ | GET /v1/sites/{id}/health |
+| Site stats | ✅ | ✅ | GET /v1/sites/{id}/stats |
+| **Hosts** ||||
+| List hosts | ✅ | ❌ | GET /v1/hosts |
+| Get host | ✅ | ❌ | GET /v1/hosts/{id} |
+| Restart host | ✅ | ❌ | POST /v1/hosts/{id}/restart |
+| Host health | ✅ | ❌ | GET /v1/hosts/{id}/health |
+| Host stats | ✅ | ❌ | GET /v1/hosts/{id}/stats |
+| **Devices** ||||
+| List devices | ✅ | ✅ | GET /v1/sites/{id}/devices |
+| Get device | ✅ | ✅ | GET /v1/sites/{id}/devices/{id} |
+| Restart device | ✅ | ✅ | POST /v1/sites/{id}/devices/{id}/restart |
+| Upgrade firmware | ✅ | ❌ | POST /v1/sites/{id}/devices/{id}/upgrade |
+| Adopt device | ✅ | ❌ | POST /v1/sites/{id}/devices/adopt |
+| **Clients** ||||
+| List clients | ✅ | ✅ | GET /v1/sites/{id}/clients |
+| Get client | ✅ | ✅ | GET /v1/sites/{id}/clients/{mac} |
+| Block client | ✅ | ✅ | POST /v1/sites/{id}/clients/{mac}/block |
+| Unblock client | ✅ | ✅ | POST /v1/sites/{id}/clients/{mac}/unblock |
+| Client stats | ✅ | ✅ | GET /v1/sites/{id}/clients/{mac}/stats |
+| **WLANs** ||||
+| List WLANs | ✅ | ✅ | GET /v1/sites/{id}/wlans |
+| Get WLAN | ✅ | ✅ | GET /v1/sites/{id}/wlans/{id} |
+| Create WLAN | ✅ | ✅ | POST /v1/sites/{id}/wlans |
+| Update WLAN | ✅ | ✅ | PUT /v1/sites/{id}/wlans/{id} |
+| Delete WLAN | ✅ | ✅ | DELETE /v1/sites/{id}/wlans/{id} |
+| **Alerts** ||||
+| List alerts | ✅ | ❌ | GET /v1/alerts |
+| Acknowledge | ✅ | ❌ | POST /v1/sites/{id}/alerts/{id}/ack |
+| Archive | ✅ | ❌ | POST /v1/sites/{id}/alerts/{id}/archive |
+| **Events** ||||
+| List events | ✅ | ❌ | GET /v1/events |
+| **Networks** ||||
+| List networks | ✅ | ✅ | GET /v1/sites/{id}/networks |
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         CLI Layer                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │   sites     │  │  devices    │  │    clients, wlans      │  │
+│  │   hosts     │  │  alerts     │  │    networks, events    │  │
+│  └──────┬──────┘  └──────┬──────┘  └───────────┬─────────────┘  │
+└─────────┼────────────────┼─────────────────────┼────────────────┘
+          │                │                     │
+          ▼                ▼                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      API Client Interface                       │
+│              (SiteManager interface - unified API)              │
+└─────────────────────────────────────────────────────────────────┘
+          │                                    │
+          ▼                                    ▼
+┌──────────────────────┐          ┌──────────────────────────────┐
+│   Cloud API Client   │          │   Local API Client           │
+│   (api.ui.com)       │          │   (UDM/UDR/Cloud Key)        │
+│                      │          │                              │
+│ • API Key Auth       │          │ • Username/Password Auth     │
+│ • Rate limiting      │          │ • CSRF token handling        │
+│ • Retry logic        │          │ • Self-signed cert support   │
+│ • Error mapping      │          │ • Proxy path handling        │
+└──────────────────────┘          └──────────────────────────────┘
+```
+
+## Troubleshooting
+
+### Authentication Errors
+
+**Problem**: `Error: API key is required`
+
+**Solution**:
+```bash
+# Verify API key is set
+usm init
+
+# Or set environment variable
+export USM_API_KEY="your-api-key"
+echo $USM_API_KEY  # Should show your key
+```
+
+### Connection Timeouts
+
+**Problem**: Network errors when connecting to local controller
+
+**Solution**:
+```bash
+# Increase timeout
+usm --timeout 60 sites list
+
+# For UniFi OS with self-signed certs
+usm --local --host=192.168.1.1 --insecure-skip-verify devices list
+```
+
+### Rate Limiting (429)
+
+**Problem**: `Error: rate limited`
+
+**Solution**: The CLI automatically retries with exponential backoff. For heavy automation, add delays between requests.
+
+### Empty Results in Local Mode
+
+**Problem**: Commands return empty results on UDM/UDR
+
+**Solution**:
+1. Enable debug mode: `usm --local --debug sites list`
+2. Verify UniFi OS version is up to date
+3. Check credentials have admin access
+4. See [Beta Testing](#beta-testing) section
 
 ## Exit Codes
 
@@ -522,145 +388,49 @@ output:
 | 5 | Rate limited (429) |
 | 6 | Network error |
 
-## Development
+## Documentation
 
-```bash
-# Install dependencies
-make deps
+- [Installation Guide](docs/INSTALL.md) - Detailed installation instructions
+- [Usage Documentation](docs/USAGE.md) - Comprehensive command reference
+- [API Documentation](docs/API.md) - API endpoint details
+- [Configuration Reference](docs/CONFIGURATION.md) - All configuration options
+- [FAQ](docs/FAQ.md) - Frequently asked questions
+- [Development Guide](docs/DEVELOPMENT.md) - Contributing and development setup
+- [Changelog](docs/CHANGELOG.md) - Version history
+- [Security](docs/SECURITY.md) - Security best practices
 
-# Build
-make build
+## Examples
 
-# Run tests
-make test
+See the [examples/](examples/) directory for:
+- [Basic usage examples](examples/basic/)
+- [Automation scripts](examples/automation/)
+- [Monitoring setup](examples/monitoring/)
+- [CI/CD integration](examples/ci-cd/)
+- [Home Assistant integration](examples/home-assistant/)
 
-# Run linter
-make lint
+## Contributing
 
-# Format code
-make format
+Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-# Install git hooks
-make install-hooks
-```
-
-## API Reference
-
-- [Site Manager API v1.0.0 Documentation](https://developer.ui.com/site-manager/v1.0.0/gettingstarted)
-
-## Related Projects
-
-- `unifi` CLI - For local UniFi Network and Protect APIs
-
-## Beta Testing & Local Controller Support (v0.0.2)
-
-This release includes experimental support for direct connection to UniFi OS local controllers (UDM, UDM-Pro, UDR). This feature is in beta and requires community testing.
-
-### Local Controller Mode
-
-Connect directly to your UniFi Dream Machine or UniFi OS console without using the cloud API:
-
-```bash
-# List devices from local controller
-usm --local --host=192.168.1.1 --username=admin --password=yourpassword devices list
-
-# Or use environment variables
-export USM_LOCAL=true
-export USM_HOST=192.168.1.1
-export USM_USERNAME=admin
-export USM_PASSWORD=yourpassword
-
-usm devices list
-usm clients list
-```
-
-**Security Note**: Never pass `--password` as a CLI flag in production - use the `USM_PASSWORD` environment variable to prevent credentials from appearing in process lists.
-
-### Debug Mode
-
-If local controller commands fail, enable debug mode to see the exact API requests and responses:
-
-```bash
-usm --local --host=192.168.1.1 --username=admin --debug devices list
-```
-
-Debug output is automatically sanitized - passwords, CSRF tokens, cookies, and API keys are redacted.
-
-### Reporting Issues
-
-When reporting local controller issues:
-
-1. Run the command with `--debug` flag
-2. Copy the `[DEBUG]` output (credentials are already redacted)
-3. Open a GitHub issue with the debug output
-
-### Chrome Dev Tools Debugging
-
-If you encounter issues with local controller commands, you can inspect the exact API payloads:
-
-1. Open your UniFi controller web UI in Chrome
-2. Open Developer Tools (F12) → Network tab
-3. Perform the action in the web UI (e.g., create a WLAN)
-4. Find the request in the Network tab
-5. Check the **Payload** tab to see exact JSON structure
-6. Compare with the `[DEBUG] Raw Payload` output from the CLI
-
-**Note**: Local controller API endpoints differ from Cloud API:
-- Cloud: `/v1/sites/{id}/devices`
-- Local: `/proxy/network/api/s/{site}/stat/device`
-
-### Implemented Local Controller Features
-
-✅ **Working**:
-- Site listing (`sites list`)
-- Device listing and details (`devices list`, `devices get`)
-- Client listing (`clients list`)
-- WLAN CRUD operations (`wlans list`, `create`, `update`, `delete`)
-- Device restart (`devices restart`)
-
-🚧 **Stubbed** (not yet implemented):
-- Site creation/update/delete
-- Host/Console management
-- Device adoption and firmware upgrades
-- Client blocking/unblocking
-- Alerts and events
-- Network configuration
-
-### 🛠 Beta Testing & Bug Reporting
-
-> **We are currently in Beta for Local Controller support.** If a command returns empty results or an error on your UDM/UDR/UWS, please help us improve by following these steps:
-
-1. **Run with debug**: Execute the failing command with the `--debug` flag:
-   ```bash
-   usm --local --debug devices list > debug_output.txt 2>&1
-   ```
-
-2. **Verify Redaction**: Open the file and ensure your `X-CSRF-Token` and `Cookie` values say `[REDACTED]`. Passwords and API keys should also be redacted.
-
-3. **Test Whoami**: Run `usm whoami` to verify basic connectivity:
-   ```bash
-   # For Cloud API
-   usm --api-key=xxx whoami
-   
-   # For Local controller
-   usm --local --host=192.168.1.1 --username=admin whoami
-   ```
-
-4. **Open an Issue**: Create a new GitHub Issue with:
-   - The exact command you ran
-   - Expected vs actual behavior
-   - The `[DEBUG] Raw Payload` section from your debug output
-   - Your UniFi OS version (if known)
-
-**Using Chrome Dev Tools:**
-If the CLI fails but you want to investigate:
-1. Open your UniFi controller web UI in Chrome
-2. Open Developer Tools (F12) → Network tab
-3. Perform the action in the web UI (e.g., create a WLAN)
-4. Find the `POST` request to `wlanconf` in the Network tab
-5. Check the **Payload** tab to see exact JSON structure
-6. Compare with the `[DEBUG] Raw Payload` output from the CLI
+- [Report bugs](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/issues)
+- [Request features](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/issues)
+- [Submit pull requests](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/pulls)
 
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Built with [Kong](https://github.com/alecthomas/kong) for CLI parsing
+- HTTP client powered by [Resty](https://github.com/go-resty/resty)
+- Configuration management with [Viper](https://github.com/spf13/viper)
+
+## Support
+
+- 📧 GitHub Issues: [github.com/dl-alexandre/UniFi-Site-Manager-CLI/issues](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/dl-alexandre/UniFi-Site-Manager-CLI/discussions)
+
+---
+
+**Note**: This project is not affiliated with or endorsed by Ubiquiti Inc. UniFi is a trademark of Ubiquiti Inc.

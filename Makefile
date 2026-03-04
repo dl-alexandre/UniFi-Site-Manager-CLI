@@ -1,207 +1,198 @@
-.PHONY: build build-all build-linux build-darwin build-windows test test-coverage lint release snapshot clean format install install-hooks mocks deps ci help check-release uninstall security check vet
-
+# Variables
 BINARY_NAME=usm
-MAIN_PATH=./cmd/usm
 VERSION=$(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-GIT_COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_TIME=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
-LDFLAGS=-ldflags "-X main.version=$(VERSION) -X main.gitCommit=$(GIT_COMMIT) -X main.buildTime=$(BUILD_TIME) -s -w"
+GIT_COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+LDFLAGS=-ldflags "-X main.version=${VERSION} -X main.buildTime=${BUILD_TIME} -X main.gitCommit=${GIT_COMMIT} -s -w"
 
 # Default target
+.PHONY: all
 all: test build
 
-# Build for current platform
+# Build binary
+.PHONY: build
 build:
-	@echo "Building $(BINARY_NAME) $(VERSION)..."
-	go build $(LDFLAGS) -o $(BINARY_NAME) $(MAIN_PATH)
-	@echo "Build complete: ./$(BINARY_NAME)"
+	@echo "Building ${BINARY_NAME}..."
+	go build ${LDFLAGS} -o bin/${BINARY_NAME} ./cmd/${BINARY_NAME}
 
-# Build for all platforms (local cross-compilation)
+# Build for all platforms
+.PHONY: build-all
 build-all: build-linux build-darwin build-windows
 
-# Linux builds
+.PHONY: build-linux
 build-linux:
-	@mkdir -p dist
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-linux-amd64 $(MAIN_PATH)
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-linux-arm64 $(MAIN_PATH)
-	@echo "Linux builds complete"
+	@echo "Building for Linux..."
+	GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o bin/${BINARY_NAME}-linux-amd64 ./cmd/${BINARY_NAME}
+	GOOS=linux GOARCH=arm64 go build ${LDFLAGS} -o bin/${BINARY_NAME}-linux-arm64 ./cmd/${BINARY_NAME}
 
-# macOS builds
+.PHONY: build-darwin
 build-darwin:
-	@mkdir -p dist
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-darwin-amd64 $(MAIN_PATH)
-	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-darwin-arm64 $(MAIN_PATH)
-	@echo "macOS builds complete"
+	@echo "Building for macOS..."
+	GOOS=darwin GOARCH=amd64 go build ${LDFLAGS} -o bin/${BINARY_NAME}-darwin-amd64 ./cmd/${BINARY_NAME}
+	GOOS=darwin GOARCH=arm64 go build ${LDFLAGS} -o bin/${BINARY_NAME}-darwin-arm64 ./cmd/${BINARY_NAME}
 
-# Windows builds
+.PHONY: build-windows
 build-windows:
-	@mkdir -p dist
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build $(LDFLAGS) -o dist/$(BINARY_NAME)-windows-amd64.exe $(MAIN_PATH)
-	@echo "Windows builds complete"
+	@echo "Building for Windows..."
+	GOOS=windows GOARCH=amd64 go build ${LDFLAGS} -o bin/${BINARY_NAME}-windows-amd64.exe ./cmd/${BINARY_NAME}
 
-# Run tests
+# Testing
+.PHONY: test
 test:
 	@echo "Running tests..."
-	go test -v -race -coverprofile=coverage.out ./...
+	go test -v -race ./...
 
-# Run tests with coverage report
-test-coverage: test
-	@echo "Generating coverage report..."
+.PHONY: test-coverage
+test-coverage:
+	@echo "Running tests with coverage..."
+	go test -v -race -coverprofile=coverage.out ./...
 	go tool cover -html=coverage.out -o coverage.html
 	@echo "Coverage report: coverage.html"
 
-# Run linter
+.PHONY: test-short
+test-short:
+	@echo "Running short tests..."
+	go test -short ./...
+
+# Linting
+.PHONY: lint
 lint:
 	@echo "Running linter..."
-	@which golangci-lint > /dev/null || (echo "Installing golangci-lint..." && go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest)
-	golangci-lint run ./...
-
-# Install goreleaser
-install-goreleaser:
-	@which goreleaser > /dev/null || (echo "Installing goreleaser..." && go install github.com/goreleaser/goreleaser/v2@latest)
-
-# Create a snapshot release (local build, no publishing)
-snapshot: install-goreleaser test
-	@echo "Creating snapshot build..."
-	goreleaser release --snapshot --clean
-
-# Check release configuration
-check-release: install-goreleaser
-	@echo "Checking release configuration..."
-	goreleaser check
-
-# Create a full release (requires GITHUB_TOKEN and git tag)
-release: install-goreleaser test check-release
-	@echo "Creating release..."
-	@if [ -z "$${GITHUB_TOKEN}" ]; then \
-		echo "Error: GITHUB_TOKEN environment variable is required"; \
-		echo "Set it with: export GITHUB_TOKEN=your_token_here"; \
-		exit 1; \
+	@if command -v golangci-lint >/dev/null 2>&1; then \
+		golangci-lint run; \
+	else \
+		echo "golangci-lint not installed. Install from https://golangci-lint.run/usage/install/"; \
 	fi
-	@if [ -z "$(shell git describe --tags --exact-match 2>/dev/null)" ]; then \
-		echo "Error: No git tag found on current commit"; \
-		echo "Create a tag first: git tag v1.0.0"; \
-		echo "Then push it: git push origin v1.0.0"; \
-		exit 1; \
-	fi
-	@echo "Creating release for tag: $(shell git describe --tags --exact-match)"
-	goreleaser release --clean
 
-# Clean build artifacts
-clean:
-	@echo "Cleaning..."
-	rm -f $(BINARY_NAME)
-	rm -rf dist/
-	rm -f coverage.out coverage.html
-	@echo "Clean complete"
+.PHONY: fmt
+fmt:
+	@echo "Formatting code..."
+	go fmt ./...
 
-# Run all checks (format, vet, lint, test)
-.PHONY: check
-check: format vet lint test
-	@echo "✓ All checks passed"
-
-# Run go vet
 .PHONY: vet
 vet:
 	@echo "Running go vet..."
 	go vet ./...
 
-# Install dependencies
+# Dependencies
 .PHONY: deps
 deps:
 	@echo "Downloading dependencies..."
 	go mod download
 	go mod tidy
-	go mod verify
 
-# Format code
-format:
-	@echo "Formatting code..."
-	@gofmt -w -s .
-	@if command -v goimports >/dev/null 2>&1; then \
-		goimports -w .; \
-	else \
-		echo "goimports not installed. Install: go install golang.org/x/tools/cmd/goimports@latest"; \
-	fi
+.PHONY: deps-update
+deps-update:
+	@echo "Updating dependencies..."
+	go get -u ./...
+	go mod tidy
 
-# Generate mocks
-mocks:
-	@echo "Generating mocks..."
-	@which mockery > /dev/null || (echo "Installing mockery..." && go install github.com/vektra/mockery/v2@latest)
-	mockery --name=SiteManager --dir=internal/pkg/api --output=internal/pkg/mocks --outpkg=mocks
-	@echo "Mocks generated in internal/pkg/mocks/"
-
-# Run security scan
-security:
-	@echo "Running security scan..."
-	@which gosec > /dev/null || (echo "Installing gosec..." && go install github.com/securego/gosec/v2/cmd/gosec@latest)
-	gosec -quiet ./...
+# Clean
+.PHONY: clean
+clean:
+	@echo "Cleaning..."
+	rm -rf bin/ dist/ coverage.out coverage.html
+	go clean
 
 # Install locally
+.PHONY: install
 install: build
-	@echo "Installing to GOPATH/bin..."
-	go install $(LDFLAGS) $(MAIN_PATH)
-	@echo "Installed to $$(go env GOPATH)/bin/$(BINARY_NAME)"
+	@echo "Installing to /usr/local/bin..."
+	sudo cp bin/${BINARY_NAME} /usr/local/bin/
 
-# Uninstall
+.PHONY: uninstall
 uninstall:
-	@echo "Uninstalling from GOPATH/bin..."
-	rm -f $$(go env GOPATH)/bin/$(BINARY_NAME)
-	@echo "Uninstall complete"
+	@echo "Uninstalling..."
+	sudo rm -f /usr/local/bin/${BINARY_NAME}
 
-# Run CI pipeline locally
-ci: deps format lint test build
-	@echo "✓ CI pipeline complete"
+# Docker
+.PHONY: docker-build
+docker-build:
+	@echo "Building Docker image..."
+	docker build -t ${BINARY_NAME}:${VERSION} .
 
-# Install git hooks
-install-hooks:
-	@echo "Installing git hooks..."
-	@git config core.hooksPath .githooks
-	@echo "Hooks installed from .githooks/"
+.PHONY: docker-run
+docker-run:
+	@echo "Running Docker container..."
+	docker run --rm -it ${BINARY_NAME}:${VERSION}
 
-# Show help
+.PHONY: docker-compose-up
+docker-compose-up:
+	@echo "Starting with docker-compose..."
+	docker-compose up -d
+
+.PHONY: docker-compose-down
+docker-compose-down:
+	@echo "Stopping docker-compose..."
+	docker-compose down
+
+# Development
+.PHONY: dev
+dev:
+	@echo "Running in development mode..."
+	go run ./cmd/${BINARY_NAME}
+
+.PHONY: run
+run: build
+	@echo "Running binary..."
+	./bin/${BINARY_NAME}
+
+# Release
+.PHONY: release
+release: clean test build-all
+	@echo "Creating release artifacts..."
+	mkdir -p dist
+	for file in bin/*; do \
+		if [[ "$$file" == *windows* ]]; then \
+			zip "dist/$$(basename $$file).zip" "$$file"; \
+		else \
+			tar -czf "dist/$$(basename $$file).tar.gz" -C bin "$$(basename $$file)"; \
+		fi; \
+	done
+	@echo "Release artifacts in dist/"
+
+# Security
+.PHONY: security
+security:
+	@echo "Running security checks..."
+	@if command -v gosec >/dev/null 2>&1; then \
+		gosec ./...; \
+	else \
+		echo "gosec not installed. Run: go install github.com/securego/gosec/v2/cmd/gosec@latest"; \
+	fi
+
+.PHONY: vulncheck
+vulncheck:
+	@echo "Checking for vulnerabilities..."
+	@if command -v govulncheck >/dev/null 2>&1; then \
+		govulncheck ./...; \
+	else \
+		echo "govulncheck not installed. Run: go install golang.org/x/vuln/cmd/govulncheck@latest"; \
+	fi
+
+# Documentation
+.PHONY: docs
+docs:
+	@echo "Generating documentation..."
+	@if command -v godoc >/dev/null 2>&1; then \
+		echo "Starting godoc server on http://localhost:6060"; \
+		godoc -http=:6060; \
+	else \
+		echo "godoc not installed. Run: go install golang.org/x/tools/cmd/godoc@latest"; \
+	fi
+
+# Help
+.PHONY: help
 help:
-	@echo "UniFi Site Manager CLI - Makefile"
-	@echo ""
-	@echo "BUILD TARGETS:"
+	@echo "Available targets:"
 	@echo "  make build          - Build binary for current platform"
 	@echo "  make build-all      - Build for all platforms (Linux, macOS, Windows)"
-	@echo "  make build-linux    - Build for Linux (amd64, arm64)"
-	@echo "  make build-darwin   - Build for macOS (amd64, arm64)"
-	@echo "  make build-windows  - Build for Windows (amd64)"
-	@echo ""
-	@echo "TEST TARGETS:"
-	@echo "  make test           - Run all tests with race detection"
-	@echo "  make test-coverage  - Run tests and generate coverage report"
-	@echo ""
-	@echo "RELEASE TARGETS:"
-	@echo "  make snapshot       - Create snapshot release (goreleaser, local only)"
-	@echo "  make release        - Create official release (requires GITHUB_TOKEN)"
-	@echo "  make check-release  - Validate .goreleaser.yaml configuration"
-	@echo ""
-	@echo "QUALITY TARGETS:"
-	@echo "  make lint           - Run golangci-lint"
-	@echo "  make format         - Format code with gofmt and goimports"
-	@echo "  make security       - Run security scan with gosec"
-	@echo "  make mocks          - Generate test mocks with mockery"
-	@echo ""
-	@echo "MAINTENANCE TARGETS:"
-	@echo "  make clean          - Remove build artifacts"
-	@echo "  make deps           - Download and tidy dependencies"
-	@echo "  make ci             - Run full CI pipeline locally"
-	@echo "  make install        - Install binary to GOPATH/bin"
-	@echo "  make uninstall      - Remove binary from GOPATH/bin"
-	@echo "  make install-hooks  - Install git hooks"
-	@echo ""
-	@echo "RELEASE PROCESS:"
-	@echo "  1. make ci          - Ensure everything passes locally"
-	@echo "  2. Update CHANGELOG.md with new version"
-	@echo "  3. git commit -am 'Release vX.Y.Z'"
-	@echo "  4. git tag vX.Y.Z"
-	@echo "  5. git push origin vX.Y.Z"
-	@echo "  6. export GITHUB_TOKEN=ghp_xxxxxxxx"
-	@echo "  7. make release     - GoReleaser handles the rest!"
-	@echo ""
-	@echo "QUICK START:"
-	@echo "  make all            - Run tests and build (default)"
-	@echo "  make help           - Show this help message"
+	@echo "  make test           - Run all tests"
+	@echo "  make test-coverage  - Run tests with coverage report"
+	@echo "  make lint           - Run linter"
+	@echo "  make fmt            - Format code"
+	@echo "  make clean          - Clean build artifacts"
+	@echo "  make install        - Install binary to /usr/local/bin"
+	@echo "  make docker-build   - Build Docker image"
+	@echo "  make release        - Create release artifacts"
+	@echo "  make help           - Show this help"
