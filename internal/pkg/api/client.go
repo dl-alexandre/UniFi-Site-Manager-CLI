@@ -107,6 +107,12 @@ func (c *Client) doGet(endpoint string) (*resty.Response, error) {
 		switch resp.StatusCode() {
 		case http.StatusOK:
 			return resp, nil
+		case http.StatusBadRequest:
+			var apiErr APIResponse
+			if err := json.Unmarshal(resp.Body(), &apiErr); err == nil && apiErr.Message != "" {
+				return nil, &ValidationError{Message: apiErr.Message}
+			}
+			return nil, &ValidationError{Message: "invalid request"}
 		case http.StatusUnauthorized:
 			return nil, &AuthError{Message: "invalid API key"}
 		case http.StatusForbidden:
