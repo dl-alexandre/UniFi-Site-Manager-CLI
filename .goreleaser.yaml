@@ -102,9 +102,51 @@ release:
     sha256sum -c checksums.txt
     ```
 
-# Note: Homebrew and Scoop distribution require additional setup
-# Homebrew requires a PAT with repo access, Scoop requires a separate bucket repo
-# For now, formulas are updated manually via the homebrew-tap repository
+# Homebrew tap configuration
+# Requires HOMEBREW_TAP_TOKEN secret with 'repo' scope
+brews:
+  - name: usm
+    repository:
+      owner: dl-alexandre
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+      branch: master
+      pull_request:
+        enabled: false
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    directory: Formula
+    description: "Full-featured CLI for managing UniFi networks via Site Manager API"
+    homepage: "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI"
+    license: "MIT"
+    skip_upload: "{{ if index .Env \"HOMEBREW_TAP_TOKEN\" }}false{{ else }}true{{ end }}"
+    test: |
+      system "#{bin}/usm", "version"
+    install: |
+      bin.install "usm"
+
+# Scoop configuration for Windows
+# Requires SCOOP_BUCKET_TOKEN secret with 'repo' scope  
+scoops:
+  - repository:
+      owner: dl-alexandre
+      name: scoop-bucket
+      token: "{{ .Env.SCOOP_BUCKET_TOKEN }}"
+      branch: master
+      pull_request:
+        enabled: false
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+    commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Tag }}"
+    description: "Full-featured CLI for managing UniFi networks via Site Manager API"
+    homepage: "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI"
+    license: MIT
+    skip_upload: "{{ if index .Env \"SCOOP_BUCKET_TOKEN\" }}false{{ else }}true{{ end }}"
+    persist:
+      - "config.yaml"
 
 # Docker configuration (optional - uncomment when ready)
 # dockers:
