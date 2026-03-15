@@ -93,12 +93,6 @@ release:
   footer: |
     ## Installation
     
-    ### macOS/Linux (Homebrew)
-    ```bash
-    brew tap dl-alexandre/usm
-    brew install usm
-    ```
-    
     ### Binary Download
     Download the appropriate binary for your platform from the assets below.
     
@@ -108,41 +102,9 @@ release:
     sha256sum -c checksums.txt
     ```
 
-# Homebrew tap configuration
-brews:
-  - name: usm
-    repository:
-      owner: dl-alexandre
-      name: homebrew-tap
-      token: "{{ .Env.GITHUB_TOKEN }}"
-    commit_author:
-      name: goreleaserbot
-      email: goreleaser@carlosbecker.com
-    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
-    directory: Formula
-    description: "Full-featured CLI for managing UniFi networks via Site Manager API"
-    homepage: "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI"
-    license: "MIT"
-    test: |
-      system "#{bin}/usm", "version"
-    install: |
-      bin.install "usm"
-
-# Scoop configuration for Windows
-scoops:
-  - repository:
-      owner: dl-alexandre
-      name: scoop-bucket
-      token: "{{ .Env.GITHUB_TOKEN }}"
-    commit_author:
-      name: goreleaserbot
-      email: goreleaser@carlosbecker.com
-    commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Tag }}"
-    description: "Full-featured CLI for managing UniFi networks via Site Manager API"
-    homepage: "https://github.com/dl-alexandre/UniFi-Site-Manager-CLI"
-    license: MIT
-    persist:
-      - "config.yaml"
+# Note: Homebrew and Scoop distribution require additional setup
+# Homebrew requires a PAT with repo access, Scoop requires a separate bucket repo
+# For now, formulas are updated manually via the homebrew-tap repository
 
 # Docker configuration (optional - uncomment when ready)
 # dockers:
