@@ -40,11 +40,11 @@ func captureStdout(f func()) string {
 
 	f()
 
-	w.Close()
+	_ = w.Close()
 	os.Stdout = old
 
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	_, _ = io.Copy(&buf, r)
 	return buf.String()
 }
 
@@ -1134,7 +1134,7 @@ func TestSitesExecCmd_Results_Grouped_By_Site(t *testing.T) {
 
 	lines := strings.Split(output, "\n")
 
-	var officeIndex, homeIndex int = -1, -1
+	var officeIndex, homeIndex = -1, -1
 	for i, line := range lines {
 		if strings.Contains(line, "Office") {
 			officeIndex = i

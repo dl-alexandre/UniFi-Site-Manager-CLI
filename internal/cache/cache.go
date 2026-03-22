@@ -49,7 +49,7 @@ func (c *SimpleCache) Get(key string) (interface{}, bool) {
 				return entry.Data, true
 			}
 			// Remove expired or invalid cache file
-			os.Remove(path)
+			_ = os.Remove(path)
 		}
 	}
 
@@ -71,7 +71,7 @@ func (c *SimpleCache) Set(key string, value interface{}, ttl time.Duration) {
 		path := c.filePath(key)
 		if err := os.MkdirAll(filepath.Dir(path), 0755); err == nil {
 			if data, err := json.Marshal(entry); err == nil {
-				os.WriteFile(path, data, 0644)
+				_ = os.WriteFile(path, data, 0644)
 			}
 		}
 	}

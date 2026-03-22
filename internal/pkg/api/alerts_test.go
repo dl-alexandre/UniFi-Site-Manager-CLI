@@ -18,7 +18,7 @@ func TestClient_ListAlerts_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(AlertsResponse{
+		_ = json.NewEncoder(w).Encode(AlertsResponse{
 			Code: "OK",
 			Data: []Alert{
 				{ID: "alert-1", Type: "DISCONNECT", Severity: "warning", Message: "Device went offline", SiteID: "site-123", DeviceID: "dev-1", Acknowledged: false},
@@ -53,7 +53,7 @@ func TestClient_ListAlerts_WithPagination(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(AlertsResponse{
+		_ = json.NewEncoder(w).Encode(AlertsResponse{
 			Code:       "OK",
 			Data:       []Alert{{ID: "alert-3", Type: "INFO", Severity: "info"}},
 			HTTPStatus: 200,
@@ -75,7 +75,7 @@ func TestClient_ListAlerts_Global(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(AlertsResponse{
+		_ = json.NewEncoder(w).Encode(AlertsResponse{
 			Code: "OK",
 			Data: []Alert{
 				{ID: "alert-1", Type: "GLOBAL", Severity: "critical", Message: "System maintenance"},
@@ -100,7 +100,7 @@ func TestClient_AcknowledgeAlert_Success(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 
 		var req AcknowledgeAlertRequest
-		json.NewDecoder(r.Body).Decode(&req)
+		_ = json.NewDecoder(r.Body).Decode(&req)
 		assert.Equal(t, "alert-456", req.AlertID)
 
 		w.WriteHeader(http.StatusOK)
@@ -120,7 +120,7 @@ func TestClient_ArchiveAlert_Success(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 
 		var req ArchiveAlertRequest
-		json.NewDecoder(r.Body).Decode(&req)
+		_ = json.NewDecoder(r.Body).Decode(&req)
 		assert.Equal(t, "alert-456", req.AlertID)
 
 		w.WriteHeader(http.StatusOK)
@@ -142,7 +142,7 @@ func TestClient_ListEvents_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(EventsResponse{
+		_ = json.NewEncoder(w).Encode(EventsResponse{
 			Code: "OK",
 			Data: []Event{
 				{ID: "event-1", Type: "CONNECTED", Message: "Client connected", SiteID: "site-123", ClientID: "client-1", Timestamp: "2024-01-15T10:30:00Z"},
@@ -170,7 +170,7 @@ func TestClient_ListEvents_Global(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(EventsResponse{
+		_ = json.NewEncoder(w).Encode(EventsResponse{
 			Code:       "OK",
 			Data:       []Event{{ID: "event-global", Type: "SYSTEM", Message: "System event"}},
 			HTTPStatus: 200,
@@ -195,7 +195,7 @@ func TestClient_ListEvents_WithPagination(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(EventsResponse{
+		_ = json.NewEncoder(w).Encode(EventsResponse{
 			Code:       "OK",
 			Data:       []Event{{ID: "event-3", Type: "ROAMING", Message: "Client roamed"}},
 			HTTPStatus: 200,
@@ -220,7 +220,7 @@ func TestClient_Whoami_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(WhoamiResponse{
+		_ = json.NewEncoder(w).Encode(WhoamiResponse{
 			Code: "OK",
 			Data: UserInfo{
 				ID:        "user-123",

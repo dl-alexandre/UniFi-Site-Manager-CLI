@@ -20,7 +20,7 @@ func TestClient_ListSites_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{
+		_ = json.NewEncoder(w).Encode(SitesResponse{
 			Code: "OK",
 			Data: []Site{
 				{ID: "site-1", Name: "Office", Description: "Main office", HostID: "host-1", Status: "active"},
@@ -50,7 +50,7 @@ func TestClient_ListSites_WithPagination(t *testing.T) {
 		if query.Get("pageSize") == "10" && query.Get("nextToken") == "token123" {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(SitesResponse{
+			_ = json.NewEncoder(w).Encode(SitesResponse{
 				Code: "OK",
 				Data: []Site{
 					{ID: "site-3", Name: "Remote", Status: "active"},
@@ -61,7 +61,7 @@ func TestClient_ListSites_WithPagination(t *testing.T) {
 		} else {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(SitesResponse{
+			_ = json.NewEncoder(w).Encode(SitesResponse{
 				Code: "OK",
 				Data: []Site{
 					{ID: "site-1", Name: "Office", Status: "active"},
@@ -92,7 +92,7 @@ func TestClient_ListSites_WithPagination(t *testing.T) {
 func TestClient_ListSites_Unauthorized(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{"message": "invalid API key"})
+		_ = json.NewEncoder(w).Encode(map[string]string{"message": "invalid API key"})
 	}))
 	defer server.Close()
 
@@ -131,7 +131,7 @@ func TestClient_GetSite_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SiteResponse{
+		_ = json.NewEncoder(w).Encode(SiteResponse{
 			Code: "OK",
 			Data: Site{
 				ID:          "site-123",
@@ -175,13 +175,13 @@ func TestClient_CreateSite_Success(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 
 		var req CreateSiteRequest
-		json.NewDecoder(r.Body).Decode(&req)
+		_ = json.NewDecoder(r.Body).Decode(&req)
 		assert.Equal(t, "New Site", req.Name)
 		assert.Equal(t, "Site description", req.Description)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(SiteResponse{
+		_ = json.NewEncoder(w).Encode(SiteResponse{
 			Code: "OK",
 			Data: Site{
 				ID:          "new-site-123",
@@ -207,7 +207,7 @@ func TestClient_CreateSite_Success(t *testing.T) {
 func TestClient_CreateSite_ValidationError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(APIResponse{
+		_ = json.NewEncoder(w).Encode(APIResponse{
 			Code:    "VALIDATION_ERROR",
 			Message: "name is required",
 		})
@@ -230,12 +230,12 @@ func TestClient_UpdateSite_Success(t *testing.T) {
 		assert.Equal(t, "PUT", r.Method)
 
 		var req UpdateSiteRequest
-		json.NewDecoder(r.Body).Decode(&req)
+		_ = json.NewDecoder(r.Body).Decode(&req)
 		assert.Equal(t, "Updated Name", req.Name)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SiteResponse{
+		_ = json.NewEncoder(w).Encode(SiteResponse{
 			Code: "OK",
 			Data: Site{
 				ID:          "site-123",
@@ -295,7 +295,7 @@ func TestClient_ListDevices_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(DevicesResponse{
+		_ = json.NewEncoder(w).Encode(DevicesResponse{
 			Code: "OK",
 			Data: []Device{
 				{ID: "dev-1", Name: "AP1", Type: "uap", Model: "U6-Lite", Status: "ONLINE", SiteID: "site-123"},
@@ -326,7 +326,7 @@ func TestClient_ListDevices_WithPagination(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(DevicesResponse{
+		_ = json.NewEncoder(w).Encode(DevicesResponse{
 			Code:       "OK",
 			Data:       []Device{{ID: "dev-3", Name: "AP3", Type: "uap", Status: "ONLINE"}},
 			HTTPStatus: 200,
@@ -349,7 +349,7 @@ func TestClient_GetDevice_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(DeviceResponse{
+		_ = json.NewEncoder(w).Encode(DeviceResponse{
 			Code: "OK",
 			Data: Device{
 				ID:         "dev-456",
@@ -382,11 +382,11 @@ func TestClient_RestartDevice_Success(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 
 		var body map[string]string
-		json.NewDecoder(r.Body).Decode(&body)
+		_ = json.NewDecoder(r.Body).Decode(&body)
 		assert.Equal(t, "dev-456", body["deviceId"])
 
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"status": "restarting"})
+		_ = json.NewEncoder(w).Encode(map[string]string{"status": "restarting"})
 	}))
 	defer server.Close()
 
@@ -419,7 +419,7 @@ func TestClient_AdoptDevice_Success(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 
 		var req AdoptDeviceRequest
-		json.NewDecoder(r.Body).Decode(&req)
+		_ = json.NewDecoder(r.Body).Decode(&req)
 		assert.Equal(t, "aa:bb:cc:dd:ee:ff", req.MACAddress)
 
 		w.WriteHeader(http.StatusOK)
@@ -441,7 +441,7 @@ func TestClient_ListClients_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(ClientsResponse{
+		_ = json.NewEncoder(w).Encode(ClientsResponse{
 			Code: "OK",
 			Data: []NetworkClient{
 				{ID: "client-1", Name: "Laptop", MACAddress: "aa:bb:cc:dd:ee:01", IPAddress: "192.168.1.10", IsWired: true, SiteID: "site-123"},
@@ -471,7 +471,7 @@ func TestClient_ListClients_WiredOnly(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(ClientsResponse{
+		_ = json.NewEncoder(w).Encode(ClientsResponse{
 			Code:       "OK",
 			Data:       []NetworkClient{{ID: "client-1", Name: "Wired Device", IsWired: true}},
 			HTTPStatus: 200,
@@ -495,7 +495,7 @@ func TestClient_ListClients_WirelessOnly(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(ClientsResponse{
+		_ = json.NewEncoder(w).Encode(ClientsResponse{
 			Code:       "OK",
 			Data:       []NetworkClient{{ID: "client-1", Name: "Wireless Device", IsWired: false}},
 			HTTPStatus: 200,
@@ -517,7 +517,7 @@ func TestClient_GetClientStats_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SingleResponse[ClientStats]{
+		_ = json.NewEncoder(w).Encode(SingleResponse[ClientStats]{
 			Code: "OK",
 			Data: ClientStats{
 				MACAddress:   "aa:bb:cc:dd:ee:ff",
@@ -548,7 +548,7 @@ func TestClient_BlockClient_Success(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 
 		var req BlockClientRequest
-		json.NewDecoder(r.Body).Decode(&req)
+		_ = json.NewDecoder(r.Body).Decode(&req)
 		assert.Equal(t, "aa:bb:cc:dd:ee:ff", req.MACAddress)
 		assert.True(t, req.Block)
 
@@ -569,7 +569,7 @@ func TestClient_UnblockClient_Success(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 
 		var req BlockClientRequest
-		json.NewDecoder(r.Body).Decode(&req)
+		_ = json.NewDecoder(r.Body).Decode(&req)
 		assert.Equal(t, "aa:bb:cc:dd:ee:ff", req.MACAddress)
 		assert.False(t, req.Block)
 

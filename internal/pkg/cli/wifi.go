@@ -228,9 +228,10 @@ func (c *WifiSetBandSteeringCmd) Run(ctx *CLIContext) error {
 
 	fmt.Printf("✓ Band steering set to '%s' for WLAN %s\n", c.Mode, c.WLANID)
 
-	if c.Mode == "prefer_5g" {
+	switch c.Mode {
+	case "prefer_5g":
 		fmt.Println("  This will encourage dual-band devices to use 5GHz for better performance.")
-	} else if c.Mode == "force_5g" {
+	case "force_5g":
 		fmt.Println("  Warning: force_5g may prevent 2.4GHz-only devices from connecting.")
 	}
 

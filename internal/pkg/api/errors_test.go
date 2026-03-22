@@ -103,13 +103,13 @@ func TestClient_RetryOnTimeout(t *testing.T) {
 			hj, ok := w.(http.Hijacker)
 			if ok {
 				conn, _, _ := hj.Hijack()
-				conn.Close()
+				_ = conn.Close()
 				return
 			}
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{Code: "OK", Data: []Site{{ID: "site-1"}}})
+		_ = json.NewEncoder(w).Encode(SitesResponse{Code: "OK", Data: []Site{{ID: "site-1"}}})
 	}))
 	defer server.Close()
 
@@ -120,7 +120,7 @@ func TestClient_RetryOnTimeout(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = client.ListSites(0, "")
+	_, _ = client.ListSites(0, "")
 	// Should eventually succeed after retries, but network errors may not retry
 	// This test verifies retry behavior is attempted
 	assert.GreaterOrEqual(t, attemptCount, 1)
@@ -136,7 +136,7 @@ func TestClient_RetryOnServerError(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{Code: "OK", Data: []Site{{ID: "site-1"}}})
+		_ = json.NewEncoder(w).Encode(SitesResponse{Code: "OK", Data: []Site{{ID: "site-1"}}})
 	}))
 	defer server.Close()
 
@@ -163,7 +163,7 @@ func TestClient_RetryWithBackoff(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{Code: "OK", Data: []Site{{ID: "site-1"}}})
+		_ = json.NewEncoder(w).Encode(SitesResponse{Code: "OK", Data: []Site{{ID: "site-1"}}})
 	}))
 	defer server.Close()
 
@@ -174,7 +174,7 @@ func TestClient_RetryWithBackoff(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = client.ListSites(0, "")
+	_, _ = client.ListSites(0, "")
 	require.NoError(t, err)
 
 	// Verify backoff timing (should increase between attempts)
@@ -191,14 +191,14 @@ func TestClient_NoRetryOnAuthError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		attemptCount++
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{"message": "invalid API key"})
+		_ = json.NewEncoder(w).Encode(map[string]string{"message": "invalid API key"})
 	}))
 	defer server.Close()
 
 	client, err := NewClient(ClientOptions{BaseURL: server.URL, APIKey: "invalid-key"})
 	require.NoError(t, err)
 
-	_, err = client.ListSites(0, "")
+	_, _ = client.ListSites(0, "")
 	assert.Error(t, err)
 	assert.Equal(t, 1, attemptCount) // Should not retry on 401
 }
@@ -230,7 +230,7 @@ func TestClient_RetryOnRateLimit(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(SitesResponse{Code: "OK", Data: []Site{{ID: "site-1"}}})
+		_ = json.NewEncoder(w).Encode(SitesResponse{Code: "OK", Data: []Site{{ID: "site-1"}}})
 	}))
 	defer server.Close()
 
@@ -262,7 +262,7 @@ func TestClient_MaxRetriesExceeded(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = client.ListSites(0, "")
+	_, _ = client.ListSites(0, "")
 	assert.Error(t, err)
 	assert.LessOrEqual(t, attemptCount, 4) // Should stop after max retries (3 attempts + 1 final)
 }
@@ -361,7 +361,7 @@ func TestClient_ServerErrors(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tt.statusCode)
 				if tt.statusCode == http.StatusBadRequest {
-					json.NewEncoder(w).Encode(APIResponse{Message: "validation failed"})
+					_ = json.NewEncoder(w).Encode(APIResponse{Message: "validation failed"})
 				}
 			}))
 			defer server.Close()
@@ -369,7 +369,7 @@ func TestClient_ServerErrors(t *testing.T) {
 			client, err := NewClient(ClientOptions{BaseURL: server.URL, APIKey: "test-key"})
 			require.NoError(t, err)
 
-			_, err = client.ListSites(0, "")
+			_, _ = client.ListSites(0, "")
 			assert.Error(t, err)
 
 			switch tt.errType.(type) {

@@ -19,7 +19,7 @@ func TestClient_ListWLANs_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(WLANsResponse{
+		_ = json.NewEncoder(w).Encode(WLANsResponse{
 			Code: "OK",
 			Data: []WLAN{
 				{ID: "wlan-1", Name: "Corporate", SSID: "CorpWiFi", Security: "WPA2", Enabled: true, SiteID: "site-123"},
@@ -52,7 +52,7 @@ func TestClient_ListWLANs_WithPagination(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(WLANsResponse{
+		_ = json.NewEncoder(w).Encode(WLANsResponse{
 			Code:       "OK",
 			Data:       []WLAN{{ID: "wlan-3", Name: "IoT", SSID: "IoTWiFi", Enabled: true}},
 			HTTPStatus: 200,
@@ -75,14 +75,14 @@ func TestClient_CreateWLAN_Success(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 
 		var req CreateWLANRequest
-		json.NewDecoder(r.Body).Decode(&req)
+		_ = json.NewDecoder(r.Body).Decode(&req)
 		assert.Equal(t, "New WLAN", req.Name)
 		assert.Equal(t, "NewWiFi", req.SSID)
 		assert.Equal(t, "WPA2", req.Security)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(WLANResponse{
+		_ = json.NewEncoder(w).Encode(WLANResponse{
 			Code: "OK",
 			Data: WLAN{
 				ID:       "wlan-new",
@@ -113,7 +113,7 @@ func TestClient_GetWLAN_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(WLANResponse{
+		_ = json.NewEncoder(w).Encode(WLANResponse{
 			Code: "OK",
 			Data: WLAN{
 				ID:       "wlan-456",
@@ -145,12 +145,12 @@ func TestClient_UpdateWLAN_Success(t *testing.T) {
 		assert.Equal(t, "PUT", r.Method)
 
 		var req UpdateWLANRequest
-		json.NewDecoder(r.Body).Decode(&req)
+		_ = json.NewDecoder(r.Body).Decode(&req)
 		assert.Equal(t, "Updated Name", req.Name)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(WLANResponse{
+		_ = json.NewEncoder(w).Encode(WLANResponse{
 			Code: "OK",
 			Data: WLAN{
 				ID:       "wlan-456",
@@ -198,7 +198,7 @@ func TestClient_ListNetworks_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(NetworksResponse{
+		_ = json.NewEncoder(w).Encode(NetworksResponse{
 			Code: "OK",
 			Data: []Network{
 				{ID: "net-1", Name: "LAN", SiteID: "site-123", VLAN: 1, Subnet: "192.168.1.0/24", DHCPEnabled: true},
@@ -230,7 +230,7 @@ func TestClient_ListNetworks_WithPagination(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(NetworksResponse{
+		_ = json.NewEncoder(w).Encode(NetworksResponse{
 			Code:       "OK",
 			Data:       []Network{{ID: "net-3", Name: "IoT", VLAN: 20}},
 			HTTPStatus: 200,
@@ -285,7 +285,7 @@ func TestClient_GetSiteHealth_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(HealthResponse{
+		_ = json.NewEncoder(w).Encode(HealthResponse{
 			Code: "OK",
 			Data: []HealthStatus{
 				{Subsystem: "wifi", Status: "ok", NumAdopted: 5, NumPending: 0, NumClient: 25},
@@ -318,7 +318,7 @@ func TestClient_GetSiteStats_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(PerformanceResponse{
+		_ = json.NewEncoder(w).Encode(PerformanceResponse{
 			Code: "OK",
 			Data: PerformanceStats{
 				SiteID:      "site-123",
@@ -360,7 +360,7 @@ func TestClient_GetSiteStats_DefaultPeriod(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(PerformanceResponse{
+		_ = json.NewEncoder(w).Encode(PerformanceResponse{
 			Code:       "OK",
 			Data:       PerformanceStats{SiteID: "site-123"},
 			HTTPStatus: 200,
@@ -384,7 +384,7 @@ func TestClient_ListHosts_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(HostsResponse{
+		_ = json.NewEncoder(w).Encode(HostsResponse{
 			Code: "OK",
 			Data: []Host{
 				{ID: "host-1", Name: "UDM-Pro", Type: "udm", Model: "UDM-Pro", Version: "2.4.0", Status: "ONLINE"},
@@ -411,7 +411,7 @@ func TestClient_GetHost_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(HostResponse{
+		_ = json.NewEncoder(w).Encode(HostResponse{
 			Code: "OK",
 			Data: Host{
 				ID:         "host-123",
@@ -445,7 +445,7 @@ func TestClient_GetHostHealth_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(HealthResponse{
+		_ = json.NewEncoder(w).Encode(HealthResponse{
 			Code: "OK",
 			Data: []HealthStatus{
 				{Subsystem: "system", Status: "ok", NumAdopted: 10},
@@ -473,7 +473,7 @@ func TestClient_GetHostStats_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(PerformanceResponse{
+		_ = json.NewEncoder(w).Encode(PerformanceResponse{
 			Code: "OK",
 			Data: PerformanceStats{
 				SiteID:  "host-123",
