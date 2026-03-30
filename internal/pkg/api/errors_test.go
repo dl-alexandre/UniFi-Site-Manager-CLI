@@ -198,7 +198,7 @@ func TestClient_NoRetryOnAuthError(t *testing.T) {
 	client, err := NewClient(ClientOptions{BaseURL: server.URL, APIKey: "invalid-key"})
 	require.NoError(t, err)
 
-	_, _ = client.ListSites(0, "")
+	_, err = client.ListSites(0, "")
 	assert.Error(t, err)
 	assert.Equal(t, 1, attemptCount) // Should not retry on 401
 }
