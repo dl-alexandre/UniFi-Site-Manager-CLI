@@ -1,5 +1,4 @@
 # GoReleaser configuration for UniFi Site Manager CLI
-# Documentation: https://goreleaser.com
 
 version: 2
 
@@ -54,7 +53,7 @@ archives:
 
 checksum:
   name_template: "checksums.txt"
-  algorithm: sha256
+  algorithm: blake3
 
 changelog:
   sort: asc
@@ -99,11 +98,9 @@ release:
     ### Verification
     Verify checksums:
     ```bash
-    sha256sum -c checksums.txt
+    b3sum -c checksums.txt
     ```
 
-# Homebrew tap configuration
-# Requires HOMEBREW_TAP_TOKEN secret with 'repo' scope
 brews:
   - name: usm
     repository:
@@ -115,7 +112,7 @@ brews:
         enabled: false
     commit_author:
       name: goreleaserbot
-      email: goreleaser@carlosbecker.com
+      email: bot@dl-alexandre.com
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
     directory: Formula
     description: "Full-featured CLI for managing UniFi networks via Site Manager API"
@@ -127,7 +124,21 @@ brews:
     install: |
       bin.install "usm"
 
-# Scoop configuration for Windows
+flatpak:
+  - app_id: net.ddns.dl-alexandre.USMCLI
+    runtime: org.freedesktop.Platform
+    runtime_version: "24.08"
+    sdk: org.freedesktop.Sdk
+    finish_args:
+      - --share=network
+      - --filesystem=home
+
+srpm:
+  enabled: true
+  summary: "Full-featured CLI for managing UniFi networks via Site Manager API"
+  license: MIT
+  url: https://github.com/dl-alexandre/UniFi-Site-Manager-CLI
+
 # Requires SCOOP_BUCKET_TOKEN secret with 'repo' scope  
 scoops:
   - repository:
@@ -139,7 +150,7 @@ scoops:
         enabled: false
     commit_author:
       name: goreleaserbot
-      email: goreleaser@carlosbecker.com
+      email: bot@dl-alexandre.com
     commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Tag }}"
     directory: bucket
     description: "Full-featured CLI for managing UniFi networks via Site Manager API"
@@ -149,7 +160,6 @@ scoops:
     persist:
       - "config.yaml"
 
-# Docker configuration (optional - uncomment when ready)
 # dockers:
 #   - image_templates:
 #       - "ghcr.io/dl-alexandre/usm:{{ .Tag }}"
@@ -164,7 +174,6 @@ scoops:
 #       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
 #       - "--label=org.opencontainers.image.version={{.Version}}"
 
-# Goreleaser Pro features (optional)
 # announce:
 #   twitter:
 #     enabled: true
