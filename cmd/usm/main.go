@@ -6,6 +6,7 @@ import (
 
 	"github.com/dl-alexandre/UniFi-Site-Manager-CLI/internal/cli"
 	pkgcli "github.com/dl-alexandre/UniFi-Site-Manager-CLI/internal/pkg/cli"
+	cliver "github.com/dl-alexandre/cli-tools/version"
 )
 
 var (
@@ -15,10 +16,11 @@ var (
 )
 
 func main() {
-	// Set version info in the cli package
-	cli.Version = version
-	cli.GitCommit = gitCommit
-	cli.BuildTime = buildTime
+	// Set version info in cli-tools
+	cliver.Version = version
+	cliver.GitCommit = gitCommit
+	cliver.BuildTime = buildTime
+	cliver.BinaryName = "usm"
 
 	// Perform automatic update check in background (non-blocking)
 	cli.AutoUpdateCheck(version)
