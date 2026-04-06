@@ -262,8 +262,8 @@ func TestClient_MaxRetriesExceeded(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, _ = client.ListSites(0, "")
-	assert.Error(t, err)
+	_, listErr := client.ListSites(0, "")
+	assert.Error(t, listErr)
 	assert.LessOrEqual(t, attemptCount, 4) // Should stop after max retries (3 attempts + 1 final)
 }
 
@@ -286,7 +286,11 @@ func TestClient_ParseRetryAfter(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client, err := NewClient(ClientOptions{BaseURL: server.URL, APIKey: "test-key"})
+	client, err := NewClient(ClientOptions{
+		BaseURL:       server.URL,
+		APIKey:        "test-key",
+		MaxRetryDelay: 1 * time.Millisecond,
+	})
 	require.NoError(t, err)
 
 	// Test with valid retry-after header
@@ -366,23 +370,27 @@ func TestClient_ServerErrors(t *testing.T) {
 			}))
 			defer server.Close()
 
-			client, err := NewClient(ClientOptions{BaseURL: server.URL, APIKey: "test-key"})
+			client, err := NewClient(ClientOptions{
+				BaseURL:       server.URL,
+				APIKey:        "test-key",
+				MaxRetryDelay: 1 * time.Millisecond,
+			})
 			require.NoError(t, err)
 
-			_, _ = client.ListSites(0, "")
-			assert.Error(t, err)
+			_, listErr := client.ListSites(0, "")
+			assert.Error(t, listErr)
 
 			switch tt.errType.(type) {
 			case *ValidationError:
-				assert.IsType(t, &ValidationError{}, err)
+				assert.IsType(t, &ValidationError{}, listErr)
 			case *AuthError:
-				assert.IsType(t, &AuthError{}, err)
+				assert.IsType(t, &AuthError{}, listErr)
 			case *PermissionError:
-				assert.IsType(t, &PermissionError{}, err)
+				assert.IsType(t, &PermissionError{}, listErr)
 			case *NotFoundError:
-				assert.IsType(t, &NotFoundError{}, err)
+				assert.IsType(t, &NotFoundError{}, listErr)
 			case *RateLimitError:
-				assert.IsType(t, &RateLimitError{}, err)
+				assert.IsType(t, &RateLimitError{}, listErr)
 			}
 		})
 	}

@@ -97,6 +97,9 @@ func (c *Client) doGet(endpoint string) (*resty.Response, error) {
 
 			if attempt < maxRetries-1 && c.shouldRetry(err) {
 				sleepDuration := c.calculateBackoff(attempt)
+				if c.maxRetryDelay > 0 && sleepDuration > c.maxRetryDelay {
+					sleepDuration = c.maxRetryDelay
+				}
 				time.Sleep(sleepDuration)
 				continue
 			}
@@ -136,6 +139,9 @@ func (c *Client) doGet(endpoint string) (*resty.Response, error) {
 		case http.StatusInternalServerError, http.StatusBadGateway, http.StatusServiceUnavailable:
 			if attempt < maxRetries-1 {
 				sleepDuration := c.calculateBackoff(attempt)
+				if c.maxRetryDelay > 0 && sleepDuration > c.maxRetryDelay {
+					sleepDuration = c.maxRetryDelay
+				}
 				time.Sleep(sleepDuration)
 				continue
 			}
@@ -171,6 +177,9 @@ func (c *Client) doPost(endpoint string, body []byte) (*resty.Response, error) {
 
 			if attempt < maxRetries-1 && c.shouldRetry(err) {
 				sleepDuration := c.calculateBackoff(attempt)
+				if c.maxRetryDelay > 0 && sleepDuration > c.maxRetryDelay {
+					sleepDuration = c.maxRetryDelay
+				}
 				time.Sleep(sleepDuration)
 				continue
 			}
@@ -212,6 +221,9 @@ func (c *Client) doPost(endpoint string, body []byte) (*resty.Response, error) {
 		case http.StatusInternalServerError, http.StatusBadGateway, http.StatusServiceUnavailable:
 			if attempt < maxRetries-1 {
 				sleepDuration := c.calculateBackoff(attempt)
+				if c.maxRetryDelay > 0 && sleepDuration > c.maxRetryDelay {
+					sleepDuration = c.maxRetryDelay
+				}
 				time.Sleep(sleepDuration)
 				continue
 			}
@@ -247,6 +259,9 @@ func (c *Client) doPut(endpoint string, body []byte) (*resty.Response, error) {
 
 			if attempt < maxRetries-1 && c.shouldRetry(err) {
 				sleepDuration := c.calculateBackoff(attempt)
+				if c.maxRetryDelay > 0 && sleepDuration > c.maxRetryDelay {
+					sleepDuration = c.maxRetryDelay
+				}
 				time.Sleep(sleepDuration)
 				continue
 			}
@@ -286,6 +301,9 @@ func (c *Client) doPut(endpoint string, body []byte) (*resty.Response, error) {
 		case http.StatusInternalServerError, http.StatusBadGateway, http.StatusServiceUnavailable:
 			if attempt < maxRetries-1 {
 				sleepDuration := c.calculateBackoff(attempt)
+				if c.maxRetryDelay > 0 && sleepDuration > c.maxRetryDelay {
+					sleepDuration = c.maxRetryDelay
+				}
 				time.Sleep(sleepDuration)
 				continue
 			}
@@ -314,6 +332,9 @@ func (c *Client) doDelete(endpoint string) (*resty.Response, error) {
 
 			if attempt < maxRetries-1 && c.shouldRetry(err) {
 				sleepDuration := c.calculateBackoff(attempt)
+				if c.maxRetryDelay > 0 && sleepDuration > c.maxRetryDelay {
+					sleepDuration = c.maxRetryDelay
+				}
 				time.Sleep(sleepDuration)
 				continue
 			}
@@ -347,6 +368,9 @@ func (c *Client) doDelete(endpoint string) (*resty.Response, error) {
 		case http.StatusInternalServerError, http.StatusBadGateway, http.StatusServiceUnavailable:
 			if attempt < maxRetries-1 {
 				sleepDuration := c.calculateBackoff(attempt)
+				if c.maxRetryDelay > 0 && sleepDuration > c.maxRetryDelay {
+					sleepDuration = c.maxRetryDelay
+				}
 				time.Sleep(sleepDuration)
 				continue
 			}
