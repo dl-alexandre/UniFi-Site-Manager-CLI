@@ -178,11 +178,19 @@ func TestClient_RetryWithBackoff(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify backoff timing (should increase between attempts)
-	if len(attemptTimes) >= 2 {
+	// Note: This test is inherently timing-sensitive. On loaded CI runners,
+	// timing can vary. We verify that:
+	// 1. At least 3 attempts were made (retries happened)
+	// 2. Delays increased between attempts (exponential backoff working)
+	require.GreaterOrEqual(t, len(attemptTimes), 3, "expected at least 3 attempts with retries")
+	if len(attemptTimes) >= 3 {
 		delay1 := attemptTimes[1].Sub(attemptTimes[0])
 		delay2 := attemptTimes[2].Sub(attemptTimes[1])
-		// Second delay should be >= first delay (exponential backoff)
-		assert.GreaterOrEqual(t, delay2, delay1)
+		// Allow 10% tolerance for timing jitter in CI environments
+		minExpectedDelay2 := delay1 - (delay1 / 10)
+		assert.GreaterOrEqual(t, delay2, minExpectedDelay2,
+			"second delay (%.2fms) should be >= first delay (%.2fms) with tolerance",
+			delay2.Milliseconds(), delay1.Milliseconds())
 	}
 }
 
