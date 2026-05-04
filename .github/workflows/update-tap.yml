@@ -24,7 +24,7 @@ jobs:
           fi
 
       - name: Checkout tap repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: dl-alexandre/homebrew-tap
           token: ${{ secrets.TAP_UPDATE_TOKEN }}
