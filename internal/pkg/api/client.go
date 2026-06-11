@@ -320,7 +320,7 @@ func (c *Client) doPut(endpoint string, body []byte) (*resty.Response, error) {
 }
 
 // doDelete performs a DELETE request with retry logic
-func (c *Client) doDelete(endpoint string) (*resty.Response, error) {
+func (c *Client) doDelete(endpoint string) error {
 	maxRetries := 3
 	var lastErr error
 
@@ -339,18 +339,18 @@ func (c *Client) doDelete(endpoint string) (*resty.Response, error) {
 				continue
 			}
 
-			return nil, lastErr
+			return lastErr
 		}
 
 		switch resp.StatusCode() {
 		case http.StatusOK, http.StatusNoContent:
-			return resp, nil
+			return nil
 		case http.StatusUnauthorized:
-			return nil, &AuthError{Message: "invalid API key"}
+			return &AuthError{Message: "invalid API key"}
 		case http.StatusForbidden:
-			return nil, &PermissionError{Message: "permission denied"}
+			return &PermissionError{Message: "permission denied"}
 		case http.StatusNotFound:
-			return nil, &NotFoundError{Resource: endpoint}
+			return &NotFoundError{Resource: endpoint}
 		case http.StatusTooManyRequests:
 			retryAfter := c.parseRetryAfter(resp)
 			if attempt < maxRetries-1 {
@@ -364,7 +364,7 @@ func (c *Client) doDelete(endpoint string) (*resty.Response, error) {
 				time.Sleep(sleepDuration)
 				continue
 			}
-			return nil, &RateLimitError{RetryAfter: retryAfter}
+			return &RateLimitError{RetryAfter: retryAfter}
 		case http.StatusInternalServerError, http.StatusBadGateway, http.StatusServiceUnavailable:
 			if attempt < maxRetries-1 {
 				sleepDuration := c.calculateBackoff(attempt)
@@ -374,16 +374,16 @@ func (c *Client) doDelete(endpoint string) (*resty.Response, error) {
 				time.Sleep(sleepDuration)
 				continue
 			}
-			return nil, fmt.Errorf("server error: %d", resp.StatusCode())
+			return fmt.Errorf("server error: %d", resp.StatusCode())
 		default:
 			if resp.StatusCode() >= 400 {
-				return nil, fmt.Errorf("API error: %d - %s", resp.StatusCode(), string(resp.Body()))
+				return fmt.Errorf("API error: %d - %s", resp.StatusCode(), string(resp.Body()))
 			}
-			return resp, nil
+			return nil
 		}
 	}
 
-	return nil, lastErr
+	return lastErr
 }
 
 // shouldRetry determines if a request should be retried based on the error

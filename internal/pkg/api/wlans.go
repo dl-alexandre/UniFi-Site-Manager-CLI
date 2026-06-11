@@ -92,6 +92,6 @@ func (c *Client) UpdateWLAN(siteID, wlanID string, req UpdateWLANRequest) (*WLAN
 
 // DeleteWLAN deletes a WLAN
 func (c *Client) DeleteWLAN(siteID, wlanID string) error {
-	_, err := c.doDelete(fmt.Sprintf("/v1/sites/%s/wlans/%s", siteID, wlanID))
+	err := c.doDelete(fmt.Sprintf("/v1/sites/%s/wlans/%s", siteID, wlanID))
 	return err
 }

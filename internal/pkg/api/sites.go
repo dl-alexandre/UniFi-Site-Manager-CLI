@@ -95,7 +95,7 @@ func (c *Client) UpdateSite(siteID string, req UpdateSiteRequest) (*SiteResponse
 
 // DeleteSite deletes a site by ID
 func (c *Client) DeleteSite(siteID string) error {
-	_, err := c.doDelete(fmt.Sprintf("/v1/sites/%s", siteID))
+	err := c.doDelete(fmt.Sprintf("/v1/sites/%s", siteID))
 	return err
 }
 
