@@ -134,7 +134,7 @@ flatpak:
       - --filesystem=home
 
 srpm:
-  enabled: true
+  enabled: false
   license: MIT
   url: https://github.com/dl-alexandre/UniFi-Site-Manager-CLI
 
