@@ -125,7 +125,8 @@ brews:
       bin.install "usm"
 
 flatpak:
-  - app_id: net.ddns.dl-alexandre.USMCLI
+  - disable: true
+    app_id: net.ddns.dl-alexandre.USMCLI
     runtime: org.freedesktop.Platform
     runtime_version: "24.08"
     sdk: org.freedesktop.Sdk
