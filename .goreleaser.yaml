@@ -120,7 +120,7 @@ brews:
     license: "MIT"
     skip_upload: "{{ if index .Env \"HOMEBREW_TAP_TOKEN\" }}false{{ else }}true{{ end }}"
     test: |
-      system "#{bin}/usm", "version"
+      system "#{bin}/usm", "--help"
     install: |
       bin.install "usm"
 
