@@ -135,7 +135,6 @@ flatpak:
 
 srpm:
   enabled: true
-  summary: "Full-featured CLI for managing UniFi networks via Site Manager API"
   license: MIT
   url: https://github.com/dl-alexandre/UniFi-Site-Manager-CLI
 
