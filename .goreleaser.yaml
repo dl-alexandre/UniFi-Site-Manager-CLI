@@ -124,20 +124,7 @@ brews:
     install: |
       bin.install "usm"
 
-flatpak:
-  - disable: true
-    app_id: net.ddns.dl-alexandre.USMCLI
-    runtime: org.freedesktop.Platform
-    runtime_version: "24.08"
-    sdk: org.freedesktop.Sdk
-    finish_args:
-      - --share=network
-      - --filesystem=home
 
-srpm:
-  enabled: false
-  license: MIT
-  url: https://github.com/dl-alexandre/UniFi-Site-Manager-CLI
 
 # Requires SCOOP_BUCKET_TOKEN secret with 'repo' scope  
 scoops:
